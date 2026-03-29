@@ -8,7 +8,7 @@ import {
 import MapComponent from '../components/MapComponent';
 import EventLogForm from '../components/EventLogForm';
 import { HealthMetricCard, UserTable } from '../components/AdminComponents';
-import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi } from '../lib/api';
+import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi, harvestApi } from '../lib/api';
 import { Farmer, Plot, FarmEvent } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -16,6 +16,7 @@ const Dashboard: React.FC = () => {
     const [plots, setPlots] = useState<Plot[]>([]);
     const [summary, setSummary] = useState<{ total_plots: number, compliant_count: number, compliance_rate: number } | null>(null);
     const [farmEvents, setFarmEvents] = useState<FarmEvent[]>([]);
+    const [harvests, setHarvests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloadingCert, setDownloadingCert] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -35,16 +36,18 @@ const Dashboard: React.FC = () => {
 
         const fetchData = async () => {
             try {
-                const [farmersRes, plotsRes, summaryRes, eventsRes] = await Promise.all([
+                const [farmersRes, plotsRes, summaryRes, eventsRes, harvestsRes] = await Promise.all([
                     farmerApi.list(),
                     plotApi.list(),
                     complianceApi.getSummary(),
-                    farmEventApi.list()
+                    farmEventApi.list(),
+                    harvestApi.list()
                 ]);
-                setFarmers(farmersRes.data);
-                setPlots(plotsRes.data);
+                setFarmers(farmersRes.data.results || farmersRes.data || []);
+                setPlots(plotsRes.data.results || plotsRes.data || []);
                 setSummary(summaryRes.data);
-                setFarmEvents(eventsRes.data);
+                setFarmEvents(eventsRes.data.results || eventsRes.data || []);
+                setHarvests(harvestsRes.data.results || harvestsRes.data || []);
             } catch (err: any) {
                 console.error('Error fetching dashboard data:', err);
                 if (err.response?.status === 401) {
@@ -185,7 +188,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Total Farmers</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.total_plots || 0}</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{farmers.length}</p>
                                         </div>
                                     </div>
                                     <div className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
@@ -203,7 +206,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Verified Harvests</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">ALPHA</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{harvests.filter((h: any) => h.status === 1 || h.status === 3).length}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -256,10 +259,58 @@ const Dashboard: React.FC = () => {
                         } />
 
                         <Route path="harvests" element={
-                            <div className="p-16 text-center bg-white dark:bg-gray-800 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg animate-fade-in">
-                                <span className="material-symbols-outlined text-4xl text-slate-300 mb-4">inventory_2</span>
-                                <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2">Recent Supply Chain Events</h2>
-                                <p className="text-slate-500 max-w-md mx-auto italic font-medium">On-chain harvests will appear here as they are indexed by the listener.</p>
+                            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm animate-fade-in">
+                                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                    <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-primary">inventory_2</span>
+                                        On-Chain Harvest Registry
+                                    </h2>
+                                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{harvests.length} Records</span>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-gray-50 dark:bg-gray-900/50 text-slate-500 uppercase text-xs font-semibold tracking-wider">
+                                            <tr>
+                                                <th className="px-6 py-4">Record ID</th>
+                                                <th className="px-6 py-4">Farmer Address</th>
+                                                <th className="px-6 py-4">Crop</th>
+                                                <th className="px-6 py-4 text-right">Weight (kg)</th>
+                                                <th className="px-6 py-4 text-right">Payout (cUSD)</th>
+                                                <th className="px-6 py-4">Status</th>
+                                                <th className="px-6 py-4">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                            {harvests.length === 0 ? (
+                                                <tr><td colSpan={7} className="px-6 py-12 text-center text-slate-400 italic">No harvests indexed yet.</td></tr>
+                                            ) : harvests.map((h: any) => {
+                                                const statusMap: Record<number, { label: string; color: string; icon: string }> = {
+                                                    0: { label: 'Pending', color: 'bg-amber-100 text-amber-700', icon: 'hourglass_empty' },
+                                                    1: { label: 'Verified', color: 'bg-blue-100 text-blue-700', icon: 'verified' },
+                                                    2: { label: 'Rejected', color: 'bg-red-100 text-red-700', icon: 'cancel' },
+                                                    3: { label: 'Paid', color: 'bg-green-100 text-green-700', icon: 'check_circle' },
+                                                };
+                                                const s = statusMap[h.status] || statusMap[0];
+                                                return (
+                                                    <tr key={h.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                        <td className="px-6 py-4 font-mono text-xs text-slate-500">#{h.record_id}</td>
+                                                        <td className="px-6 py-4 font-mono text-xs text-slate-400">{h.farmer_address ? `${h.farmer_address.slice(0,6)}...${h.farmer_address.slice(-4)}` : '—'}</td>
+                                                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{h.crop_type}</td>
+                                                        <td className="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">{parseFloat(h.weight_kg).toFixed(0)}</td>
+                                                        <td className="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">${parseFloat(h.payout_amount_cusd || 0).toFixed(2)}</td>
+                                                        <td className="px-6 py-4">
+                                                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${s.color}`}>
+                                                                <span className="material-symbols-outlined text-[12px]">{s.icon}</span>
+                                                                {s.label}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-slate-500 text-xs">{new Date(h.created_at).toLocaleDateString()}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         } />
 
