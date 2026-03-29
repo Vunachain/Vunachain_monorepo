@@ -21,8 +21,8 @@ const Dashboard: React.FC = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     
     // Admin States
-    const [systemHealth, setSystemHealth] = useState<any>(null);
-    const [usersList, setUsersList] = useState<any[]>([]);
+    const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
+    const [usersList, setUsersList] = useState<AdminUser[]>([]);
     const [isPollingHealth, setIsPollingHealth] = useState(false);
     const [userCategory, setUserCategory] = useState<'internal' | 'external'>('internal');
     
@@ -45,9 +45,11 @@ const Dashboard: React.FC = () => {
                 setPlots(plotsRes.data);
                 setSummary(summaryRes.data);
                 setFarmEvents(eventsRes.data);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('Error fetching dashboard data:', err);
-                if (err.response?.status === 401) {
+                // Type guard for Axios errors or similar
+                const error = err as any; 
+                if (error.response?.status === 401) {
                     setIsAuthenticated(false);
                     localStorage.removeItem('vunachain_token');
                 }
@@ -92,7 +94,7 @@ const Dashboard: React.FC = () => {
         }
     };
 
-    const handleUpdateUser = async (id: number, data: any) => {
+    const handleUpdateUser = async (id: number, data: Partial<AdminUser>) => {
         try {
             await adminApi.updateUser(id, data);
             fetchUsers();

@@ -8,6 +8,9 @@ export const cUSD_ADDRESS: Address = '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1
  * Ensures gas is paid in cUSD if the user is in a MiniPay environment.
  */
 export const getCeloOverrides = (isMiniPay: boolean) => {
+    interface Window {
+        dataLayer: Record<string, unknown>[];
+    }
     if (isMiniPay) {
         return {
             feeCurrency: cUSD_ADDRESS,
@@ -19,7 +22,7 @@ export const getCeloOverrides = (isMiniPay: boolean) => {
 /**
  * Example function to structure a blockchain transaction call
  */
-export const structureTransaction = (config: any, isMiniPay: boolean) => {
+export const structureTransaction = (config: Record<string, unknown>, isMiniPay: boolean) => {
     return {
         ...config,
         overrides: getCeloOverrides(isMiniPay),

@@ -10,11 +10,16 @@ export interface Farmer {
     created_at: string;
 }
 
+export interface GeoJSONPolygon {
+    type: "Polygon";
+    coordinates: number[][][];
+}
+
 export interface Plot {
     id: string;
     farmer: string;
     name: string;
-    boundary: any; // GeoJSON Polygon
+    boundary: GeoJSONPolygon;
     centroid?: {   // GeoJSON Point
         type: "Point";
         coordinates: [number, number];
@@ -33,6 +38,30 @@ export interface Harvest {
     status: number;
     payout_amount_cusd: string;
     transaction_hash: string | null;
+}
+
+export interface SystemHealth {
+    services: {
+        database: { status: 'connected' | 'error'; latency: string };
+        blockchain_sync: { status: 'active' | 'warning' | 'error'; last_synced_batch: string };
+    };
+    infrastructure: {
+        memory_usage_mb: number;
+        process_uptime: string;
+        python_version: string;
+        os: string;
+        cpu_percent: number;
+    };
+}
+
+export interface AdminUser {
+    id: number;
+    username: string;
+    email: string;
+    is_internal: boolean;
+    primary_role: string;
+    is_active: boolean;
+    date_joined: string;
 }
 
 export interface FarmEvent {

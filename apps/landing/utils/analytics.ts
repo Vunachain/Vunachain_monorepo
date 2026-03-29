@@ -10,7 +10,7 @@
 // Extend the Window interface to include dataLayer
 declare global {
     interface Window {
-        dataLayer: any[];
+        dataLayer: Record<string, unknown>[];
     }
 }
 
@@ -150,7 +150,7 @@ export function trackChecklistDownload(email: string): void {
  * @param eventName - Name of the custom event
  * @param eventData - Additional data to include with the event
  */
-export function trackCustomEvent(eventName: string, eventData: Record<string, any> = {}): void {
+export function trackCustomEvent(eventName: string, eventData: Record<string, unknown> = {}): void {
     const event = {
         event: eventName,
         ...eventData,

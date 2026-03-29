@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { 
     Activity, Database, Cpu, HardDrive, Clock, 
     Shield, ShieldAlert, CheckCircle2, XCircle, 
-    UserCog, Trash2, Mail, Calendar, ExternalLink,
-    AlertCircle
+    UserCog, Trash2, Mail, Calendar
 } from 'lucide-react';
 
 // --- System Health Components ---
@@ -48,16 +47,7 @@ export const HealthMetricCard: React.FC<HealthMetricProps> = ({ title, value, st
 
 // --- User Management Components ---
 
-interface User {
-    id: number;
-    username: string;
-    email: string;
-    is_staff: boolean;
-    is_active: boolean;
-    date_joined: string;
-    roles: string[];
-    is_internal: boolean;
-}
+import { AdminUser as User } from '../types';
 
 interface UserTableProps {
     users: User[];

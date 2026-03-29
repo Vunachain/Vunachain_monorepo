@@ -1,0 +1,202 @@
+
+> vunachain@1.0.0 lint
+> turbo lint --filter=@vunachain/landing
+
+• turbo 2.8.21
+
+   • Packages in scope: @vunachain/landing
+   • Running lint in 1 packages
+   • Remote caching disabled
+
+@vunachain/landing:lint: cache miss, executing eeefdb4134db25ab
+@vunachain/landing:lint: 
+@vunachain/landing:lint: > @vunachain/landing@1.0.0 lint /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing
+@vunachain/landing:lint: > eslint .
+@vunachain/landing:lint: 
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/AdminComponents.tsx
+@vunachain/landing:lint:   1:17  error  'useState' is defined but never used      @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   3:5   error  'Activity' is defined but never used      @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   3:15  error  'Database' is defined but never used      @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   3:25  error  'Cpu' is defined but never used           @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   3:30  error  'HardDrive' is defined but never used     @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   3:41  error  'Clock' is defined but never used         @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   4:5   error  'Shield' is defined but never used        @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   4:13  error  'ShieldAlert' is defined but never used   @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   5:38  error  'ExternalLink' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   6:5   error  'AlertCircle' is defined but never used   @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/Benefits.tsx
+@vunachain/landing:lint:   20:15   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   20:30   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   20:269  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   20:336  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/ContractDetailModal.tsx
+@vunachain/landing:lint:     5:15   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    57:64   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   158:209  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/DashboardCharts.tsx
+@vunachain/landing:lint:   10:11  error  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   16:7   error  'GRADIENT_GREEN' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/DemoModal.tsx
+@vunachain/landing:lint:   38:16  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/DiagnosticModal.tsx
+@vunachain/landing:lint:   4:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/EventLogForm 2.tsx
+@vunachain/landing:lint:   84:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/EventLogForm.tsx
+@vunachain/landing:lint:   91:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/ExitIntentModal.tsx
+@vunachain/landing:lint:    28:11   error  'handleWindowFocus' is assigned a value but never used           @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    85:86   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:    85:139  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   131:25   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/FarmerOnboardingForm.tsx
+@vunachain/landing:lint:   31:17  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/FarmerOnboardingWizard.tsx
+@vunachain/landing:lint:   39:17  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   76:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/FarmerProfileModal.tsx
+@vunachain/landing:lint:   13:11  error  'lastEvent' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   99:53  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   99:67  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/FeatureSpotlight.tsx
+@vunachain/landing:lint:   36:18  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   36:23  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   36:30  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   36:43  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   55:66  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   55:79  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   96:26  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/Footer.tsx
+@vunachain/landing:lint:    2:8   error  'Tooltip' is defined but never used                              @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   47:57  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/Hero.tsx
+@vunachain/landing:lint:   8:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/LegalModal.tsx
+@vunachain/landing:lint:   46:168  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/MapComponent.tsx
+@vunachain/landing:lint:    31:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    49:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   106:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   108:72  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   192:99  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   193:98  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/ProblemSection.tsx
+@vunachain/landing:lint:    6:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   42:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/ROICalculator.tsx
+@vunachain/landing:lint:    4:8  error    'Tooltip' is defined but never used                                                                                @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   63:6  warning  React Hook useEffect has a missing dependency: 'rawRecoverable'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/Web3Provider.tsx
+@vunachain/landing:lint:    1:17  error  'ReactNode' is defined but never used     @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    6:5   error  'darkTheme' is defined but never used     @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   32:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/components/YieldPredictionForm.tsx
+@vunachain/landing:lint:   6:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/cypress.config.ts
+@vunachain/landing:lint:   6:21  error  'on' is defined but never used      @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   6:25  error  'config' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/cypress/support/commands.ts
+@vunachain/landing:lint:   4:3  error  ES2015 module syntax is preferred over namespaces  @typescript-eslint/no-namespace
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/lib/api.ts
+@vunachain/landing:lint:   119:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/lib/markdown.ts
+@vunachain/landing:lint:   25:18  error  'index' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/AgronomistDashboard.tsx
+@vunachain/landing:lint:   14:64  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   17:11  error  'navigate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   44:18  error  'error' is defined but never used              @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/BlogPage.tsx
+@vunachain/landing:lint:   8:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/BlogPostPage.tsx
+@vunachain/landing:lint:   10:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/CaseOfficerDashboard.tsx
+@vunachain/landing:lint:   3:34  error  'harvestApi' is defined but never used    @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   6:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   7:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/CoopManagerDashboard.tsx
+@vunachain/landing:lint:    11:18   error  'AnimatePresence' is defined but never used                      @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    16:48   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    18:44   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    22:62   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    54:18   error  'error' is defined but never used                                @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   358:130  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   358:155  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/Dashboard.tsx
+@vunachain/landing:lint:     5:5    error  'Loader' is defined but never used                               @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:     5:31   error  'Cpu' is defined but never used                                  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    29:11   error  'navigate' is assigned a value but never used                    @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    51:38   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   101:18   error  'err' is defined but never used                                  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   111:22   error  'err' is defined but never used                                  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   296:123  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint:   296:137  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/LoginPage.tsx
+@vunachain/landing:lint:     9:13  error  'isConnected' is assigned a value but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:     9:26  error  'address' is assigned a value but never used      @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    29:23  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:   161:37  error  'openChainModal' is defined but never used        @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/pages/OfftakerDashboard.tsx
+@vunachain/landing:lint:     5:36  error  'PerformanceBarChart' is defined but never used                  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:    15:44  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    16:48  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    32:44  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+@vunachain/landing:lint:    75:18  error  'error' is defined but never used                                @typescript-eslint/no-unused-vars
+@vunachain/landing:lint:   246:88  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/tailwind.config.js
+@vunachain/landing:lint:   63:9  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+@vunachain/landing:lint:   64:9  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/types/index.ts
+@vunachain/landing:lint:   7:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/utils/analytics.ts
+@vunachain/landing:lint:   134:40  error  'email' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: /Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing/utils/blockchain.ts
+@vunachain/landing:lint:   11:15  error  'Window' is defined but never used  @typescript-eslint/no-unused-vars
+@vunachain/landing:lint: 
+@vunachain/landing:lint: ✖ 101 problems (100 errors, 1 warning)
+@vunachain/landing:lint: 
+@vunachain/landing:lint:  ELIFECYCLE  Command failed with exit code 1.
+ ERROR  @vunachain/landing#lint: command (/Users/mohamedalsayed/Documents/Vunachain_monorepo/apps/landing) /opt/homebrew/bin/pnpm run lint exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    7.33s 
+Failed:    @vunachain/landing#lint
+
+ ERROR  run failed: command  exited (1)

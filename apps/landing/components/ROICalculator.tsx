@@ -199,7 +199,7 @@ const ROICalculator: React.FC<ROICalculatorProps> = ({ onOpenDemo }) => {
                     <button
                       key={c}
                       type="button"
-                      onClick={() => setCrop(c as any)}
+                      onClick={() => setCrop(c as 'Tea' | 'Dairy' | 'Avocado')}
                       className={`flex-1 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all duration-300 relative overflow-hidden
                         ${crop === c
                           ? 'bg-primary text-white shadow-sm scale-[1.02]'

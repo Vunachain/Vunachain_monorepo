@@ -32,19 +32,26 @@ class Command(BaseCommand):
         UserProfile.objects.all().delete()
         UserSettings.objects.all().delete()
         
-        # Keep superusers but clean other non-staff users if needed? 
-        # For simulation, we'll keep it simple.
-        
-        # 1. Create Managers & Cooperatives
-        self.stdout.write("Initializing Cooperatives and Managers...")
+        # 0. Groups Setup
+        self.stdout.write("Configuring permission groups...")
+        coop_group, _ = Group.objects.get_or_create(name='CoopManager')
+        offtaker_group, _ = Group.objects.get_or_create(name='Offtaker')
+        agent_group, _ = Group.objects.get_or_create(name='FieldAgent')
+        agro_group, _ = Group.objects.get_or_create(name='Agronomist')
+        auditor_group, _ = Group.objects.get_or_create(name='Auditor')
+
+        # 0.1 Cleanup
+        self.stdout.write("Cleaning up existing data...")
         
         nyeri_manager, _ = User.objects.get_or_create(username='nyeri_admin', defaults={'email': 'nyeri@vunachain.com'})
         nyeri_manager.set_password('Vunachain2024!')
+        nyeri_manager.groups.add(coop_group)
         nyeri_manager.save()
         self.create_profile_and_settings(nyeri_manager, "Nyeri Cooperative Manager", "Agricultural lead with 15 years experience in the Central Highlands.")
         
         elgon_manager, _ = User.objects.get_or_create(username='elgon_admin', defaults={'email': 'elgon@vunachain.com'})
         elgon_manager.set_password('Vunachain2024!')
+        elgon_manager.groups.add(coop_group)
         elgon_manager.save()
         self.create_profile_and_settings(elgon_manager, "Mt. Elgon Operations Head", "Expert in organic coffee certification and cooperative governance.")
 
@@ -56,11 +63,13 @@ class Command(BaseCommand):
         
         buyer1, _ = User.objects.get_or_create(username='coffee_intl_buyer', defaults={'email': 'sourcing@coffeeintl.com'})
         buyer1.set_password('Vunachain2024!')
+        buyer1.groups.add(offtaker_group)
         buyer1.save()
         self.create_profile_and_settings(buyer1, "Global Sourcing Director")
 
         buyer2, _ = User.objects.get_or_create(username='global_grains_offtaker', defaults={'email': 'ops@globalgrains.com'})
         buyer2.set_password('Vunachain2024!')
+        buyer2.groups.add(offtaker_group)
         buyer2.save()
         self.create_profile_and_settings(buyer2, "Supply Chain Analyst")
 

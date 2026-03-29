@@ -7,6 +7,8 @@ import ContractDetailModal from '../components/ContractDetailModal';
 import { farmerApi, plotApi, complianceApi, contractApi, analyticsApi } from '../lib/api';
 import { Farmer, Plot } from '../types';
 import FarmerOnboardingWizard from '../components/FarmerOnboardingWizard';
+import { VolumeTimeAreaChart, ComplianceDonutChart } from '../components/DashboardCharts';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CoopManagerDashboard: React.FC = () => {
     const [farmers, setFarmers] = useState<Farmer[]>([]);
@@ -33,7 +35,7 @@ const CoopManagerDashboard: React.FC = () => {
             setPlots(plotsRes.data.results || plotsRes.data || []);
             setSummary(summaryRes.data);
             setContracts(contractsRes.data.results || contractsRes.data || []);
-            setMetrics(metricsRes.data.metrics);
+            setMetrics(metricsRes.data);
         } catch (err) {
             console.error('Error fetching Coop Manager data:', err);
         } finally {
@@ -101,50 +103,94 @@ const CoopManagerDashboard: React.FC = () => {
                             <div className="absolute -bottom-10 -right-10 h-48 w-48 rounded-full bg-white/10 blur-3xl"></div>
                         </div>
 
+                        {/* Analytics Row */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Main Volume Chart */}
+                            <div className="lg:col-span-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-xl shadow-black/5">
+                                <div className="flex justify-between items-center mb-8">
+                                    <div>
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Weekly Supply Trends</h3>
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Aggregated harvest volume (MT)</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-[10px] font-black uppercase">Live</div>
+                                    </div>
+                                </div>
+                                <div className="h-[300px]">
+                                    {metrics?.charts?.weekly_volume && (
+                                        <VolumeTimeAreaChart data={metrics.charts.weekly_volume} />
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Compliance Donut */}
+                            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-xl shadow-black/5 flex flex-col">
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1">EUDR Portfolio</h3>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-8">Compliance distribution</p>
+                                <div className="flex-1 min-h-[250px] relative">
+                                    {metrics?.charts?.compliance_distribution && (
+                                        <ComplianceDonutChart data={metrics.charts.compliance_distribution} />
+                                    )}
+                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <div className="text-center mt-[-20px]">
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.compliance_rate?.toFixed(0) ?? 0}%</p>
+                                            <p className="text-[10px] font-bold text-slate-500 uppercase">Rate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Quick Stats: MVP North Star Metrics */}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                             {[
                                 { 
                                     icon: 'trending_down', 
-                                    label: 'Side-Selling Improv.', 
-                                    value: `+${metrics?.side_selling_improvement ?? 0}%`, 
+                                    label: 'Side-Selling Imp.', 
+                                    value: `+${metrics?.metrics?.side_selling_improvement ?? 0}%`, 
                                     sub: 'Vs. regional baseline', 
                                     color: 'green' 
                                 },
                                 { 
                                     icon: 'bolt', 
                                     label: 'Avg. Payout Speed', 
-                                    value: metrics?.avg_payment_speed_minutes < 60 
-                                        ? `${metrics?.avg_payment_speed_minutes ?? 0}m` 
-                                        : `${(metrics?.avg_payment_speed_minutes / 60).toFixed(1)}h`, 
+                                    value: (metrics?.metrics?.avg_payment_speed_minutes ?? 0) < 60 
+                                        ? `${metrics?.metrics?.avg_payment_speed_minutes ?? 0}m` 
+                                        : `${(metrics?.metrics?.avg_payment_speed_minutes / 60).toFixed(1)}h`, 
                                     sub: 'Target: < 24 hours', 
                                     color: 'blue' 
                                 },
                                 { 
                                     icon: 'gavel', 
                                     label: 'Dispute Rate', 
-                                    value: `${metrics?.dispute_rate ?? 0}%`, 
-                                    sub: 'Collection point conflicts', 
+                                    value: `${metrics?.metrics?.dispute_rate ?? 0}%`, 
+                                    sub: 'Collection conflicts', 
                                     color: 'amber' 
                                 },
                                 { 
                                     icon: 'verified', 
-                                    label: 'EUDR Compliance', 
+                                    label: 'Plot Status', 
                                     value: `${summary?.compliance_rate?.toFixed(1) ?? '—'}%`, 
                                     sub: `${summary?.compliant_count ?? 0} of ${summary?.total_plots ?? 0} plots`, 
                                     color: 'indigo' 
                                 },
                             ].map((stat, i) => (
-                                <div key={i} className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-sm transition-shadow">
+                                <motion.div 
+                                    key={i} 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-6 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-lg shadow-black/5 hover:transform hover:scale-[1.02] transition-all cursor-default"
+                                >
                                     <div className="flex items-center gap-4 mb-4">
-                                        <div className={`p-3 rounded-lg bg-${stat.color}-50 dark:bg-${stat.color}-900/20 text-${stat.color}-600 dark:text-${stat.color}-400`}>
+                                        <div className={`p-3 rounded-xl bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-400`}>
                                             <span className="material-symbols-outlined">{stat.icon}</span>
                                         </div>
-                                        <span className="font-medium text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wider">{stat.label}</span>
+                                        <span className="font-bold text-slate-500 text-[10px] uppercase tracking-widest">{stat.label}</span>
                                     </div>
                                     <p className="text-3xl font-black text-slate-900 dark:text-white mb-1">{stat.value}</p>
-                                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-tighter">{stat.sub}</p>
-                                </div>
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">{stat.sub}</p>
+                                </motion.div>
                             ))}
                         </div>
 

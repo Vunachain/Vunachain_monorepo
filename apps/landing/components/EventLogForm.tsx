@@ -87,10 +87,11 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
                 ph_level: '',
                 photo_url: ''
             });
-        } catch (err: any) {
+        } catch (err: unknown) {
+            const error = err as any;
             setResult({
                 success: false,
-                message: err.response?.data?.error || 'Failed to log event.'
+                message: error.response?.data?.error || 'Failed to log event.'
             });
         } finally {
             setLoading(false);

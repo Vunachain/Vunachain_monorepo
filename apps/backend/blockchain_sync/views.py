@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
@@ -6,10 +7,12 @@ from . import serializers
 from .models import OnChainHarvest, MerkleBatchModel, FarmerProfile, Plot, FarmEvent, SupplyContract, MpesaPayout
 from blockchain.relayer import meta_relayer, SignedHarvestData
 from .certificates import generate_compliance_certificate
-from django.db.models import Avg, Count, F, ExpressionWrapper, fields
+from django.db.models import Avg, Count, F, ExpressionWrapper, fields, Sum
+from django.db.models.functions import TruncWeek
 from django.http import FileResponse
 import io
 import logging
+from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -358,19 +361,39 @@ def get_harvest_proof(request, record_id):
 def mpesa_callback(request):
     """
     Callback endpoint for M-Pesa B2C payout results.
-    Secured by verifying the request originates from a known Safaricom IP range.
+    Secured by:
+    1. Dynamic Token validation (?token=<MPESA_CALLBACK_TOKEN>)
+    2. IP allowlist guard (Safaricom production IPs)
     """
-    import hashlib, hmac
-    from django.conf import settings as django_settings
+    import logging
+    import os
+    logger = logging.getLogger(__name__)
 
-    # Minimal IP allowlist guard (Safaricom production IPs)
-    # In production, set MPESA_CALLBACK_IPS env var as comma-separated IPs
-    allowed_ips_env = os.getenv('MPESA_CALLBACK_IPS', '')
+    # 1. Security Check: Token-based access
+    expected_token = os.getenv('MPESA_CALLBACK_TOKEN')
+    provided_token = request.query_params.get('token')
+    
+    if expected_token and provided_token != expected_token:
+        logger.warning("M-Pesa callback rejected: Invalid or missing token.")
+        return Response({"ResultCode": 1, "ResultDesc": "Unauthorized"}, status=401)
+
+    # 2. Security Check: IP allowlist guard
+    # Default Safaricom production IPs based on Daraja documentation/community
+    default_ips = (
+        '196.201.214.200,196.201.214.206,196.201.213.114,196.201.214.207,'
+        '196.201.214.208,196.201.213.44,196.201.212.127,196.201.212.138,'
+        '196.201.212.129,196.201.212.136,196.201.212.74,196.201.212.69'
+    )
+    allowed_ips_env = os.getenv('MPESA_CALLBACK_IPS', default_ips)
+    
     if allowed_ips_env:
         allowed_ips = [ip.strip() for ip in allowed_ips_env.split(',')]
+        # Extract client IP (handle proxy/Railway forward)
         client_ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', ''))
         client_ip = client_ip.split(',')[0].strip()
-        if client_ip not in allowed_ips:
+        
+        # In development/local, skip IP check if not strictly enforced
+        if client_ip not in allowed_ips and not os.getenv('DEBUG') == 'True':
             logger.warning("M-Pesa callback rejected: untrusted IP %s", client_ip)
             return Response({"ResultCode": 1, "ResultDesc": "Forbidden"}, status=403)
 
@@ -470,44 +493,94 @@ class AnalyticsViewSet(viewsets.ViewSet):
         user = request.user
         harvests = OnChainHarvest.objects.all()
         payouts = MpesaPayout.objects.filter(status='COMPLETED')
+        plots = Plot.objects.all()
+        contracts = SupplyContract.objects.filter(status='ACTIVE')
 
         if not user.is_staff and not user.groups.filter(name='Auditor').exists():
-            coop = getattr(user, 'managed_cooperative', None)
-            if coop:
-                harvests = harvests.filter(farmer_id__in=FarmerProfile.objects.filter(cooperative=coop).values_list('id', flat=True))
+            if user.groups.filter(name='CoopManager').exists():
+                coop = getattr(user, 'managed_cooperative', None)
+                if coop:
+                    farmer_ids = FarmerProfile.objects.filter(cooperative=coop).values_list('id', flat=True)
+                    harvests = harvests.filter(farmer_id__in=[str(fid) for fid in farmer_ids])
+                    payouts = payouts.filter(harvest__in=harvests)
+                    plots = plots.filter(cooperative=coop)
+                    contracts = contracts.filter(cooperative=coop)
+                else:
+                    return Response({"error": "No cooperative data found for manager"}, status=status.HTTP_404_NOT_FOUND)
+            elif user.groups.filter(name='Offtaker').exists():
+                contracts = contracts.filter(buyer=user)
+                # For harvests, show only those related to the buyer's active contracts
+                relevant_commodities = contracts.values_list('commodity', flat=True)
+                relevant_coops = contracts.values_list('cooperative', flat=True)
+                harvests = harvests.filter(crop_type__in=relevant_commodities)
+                # Note: harvests model doesn't have coop link, but we filter by crop for now. 
+                # In production, we'd join via FarmerProfile.
                 payouts = payouts.filter(harvest__in=harvests)
+                plots = plots.filter(cooperative__in=relevant_coops)
             else:
-                return Response({"error": "No cooperative data found"}, status=status.HTTP_404_NOT_FOUND)
+                # Fallback for other roles if they access analytics
+                pass
 
-        # 1. Side-Selling Reduction (Mocked for MVP demo based on survey/baseline)
-        # In production, this compares actual vs expected volume from SupplyContracts.
-        side_selling_reduction = 12.5 # Percent improvement
+        # 1. Side-Selling Reduction (Mocked for MVP demo)
+        side_selling_reduction = 12.5 
 
         # 2. Days to Pay (Payment Speed)
         avg_speed_mins = 0
-        if payouts.exists():
-            # Calculate time delta between harvest verification and payout completion
-            # (In a real DB like PostGIS/Postgres, this is easier. For SQLite, we mock or perform simple math)
-            # Duration in minutes
-            durations = []
-            for p in payouts:
-                if p.completed_at and p.harvest.created_at:
-                    delta = p.completed_at - p.harvest.created_at
-                    durations.append(delta.total_seconds() / 60)
-            
-            if durations:
-                avg_speed_mins = sum(durations) / len(durations)
+        payout_durations = []
+        for p in payouts:
+            if p.completed_at and p.harvest.created_at:
+                delta = p.completed_at - p.harvest.created_at
+                payout_durations.append(delta.total_seconds() / 60)
+        if payout_durations:
+            avg_speed_mins = sum(payout_durations) / len(payout_durations)
 
-        # 3. Dispute Rate (Ratio of rejected harvests)
-        total_harvests = harvests.count()
-        rejected_harvests = harvests.filter(status=2).count() # Status 2 = Rejected
-        dispute_rate = (rejected_harvests / total_harvests * 100) if total_harvests > 0 else 0
+        # 3. Dispute Rate
+        total_harvest_count = harvests.count()
+        rejected_harvests = harvests.filter(status=2).count()
+        dispute_rate = (rejected_harvests / total_harvest_count * 100) if total_harvest_count > 0 else 0
+
+        # 4. Weekly Volume Trends (Last 12 weeks)
+        twelve_weeks_ago = timezone.now() - timedelta(weeks=12)
+        weekly_data = harvests.filter(created_at__gte=twelve_weeks_ago)\
+            .annotate(week=TruncWeek('created_at'))\
+            .values('week')\
+            .annotate(volume=Sum('weight_kg'))\
+            .order_by('week')
+
+        # 5. Compliance Distribution
+        total_plots = plots.count()
+        compliant_count = plots.filter(is_eudr_compliant=True).count()
+        compliance_distribution = [
+            {"name": "Compliant", "value": compliant_count},
+            {"name": "Non-Compliant", "value": total_plots - compliant_count}
+        ]
+
+        # 6. Contract Performance (Radar/Bar)
+        performance_data = []
+        for c in contracts:
+            # Calculate actual volume for this contract's commodity in the coop
+            actual = harvests.filter(
+                crop_type__iexact=c.commodity,
+                created_at__gte=c.created_at
+            ).aggregate(total=Sum('weight_kg'))['total'] or 0
+            
+            performance_data.append({
+                "commodity": c.commodity,
+                "target": float(c.target_volume_kg),
+                "actual": float(actual),
+                "fulfillment": round((float(actual) / float(c.target_volume_kg) * 100), 1) if c.target_volume_kg > 0 else 0
+            })
 
         return Response({
             "metrics": {
                 "side_selling_improvement": side_selling_reduction,
                 "avg_payment_speed_minutes": round(avg_speed_mins, 1),
                 "dispute_rate": round(dispute_rate, 2),
-                "total_volume_mt": (sum(h.weight_kg for h in harvests) / 1000) if harvests.exists() else 0
+                "total_volume_mt": (sum(h.weight_kg for h in harvests) / 1000) if harvests.exists() else 0,
+            },
+            "charts": {
+                "weekly_volume": list(weekly_data),
+                "compliance_distribution": compliance_distribution,
+                "contract_performance": performance_data
             }
         })

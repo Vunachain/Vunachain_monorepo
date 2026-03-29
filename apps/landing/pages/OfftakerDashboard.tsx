@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import FulfillmentBar from '../components/FulfillmentBar';
 import { harvestApi, contractApi, analyticsApi } from '../lib/api';
+import { ContractPerformanceRadar, PerformanceBarChart } from '../components/DashboardCharts';
+import { motion } from 'framer-motion';
 
 const topCooperatives = [
     { name: 'Nyeri Farmers Coop', score: 98, status: 'Top Rated', last_fulfilled: '1,200kg' },
@@ -27,15 +29,19 @@ const OfftakerDashboard: React.FC = () => {
         deadline: ''
     });
 
+    const [metrics, setMetrics] = useState<any>(null);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [hRes, cRes] = await Promise.all([
+                const [hRes, cRes, mRes] = await Promise.all([
                     harvestApi.list(),
-                    contractApi.list()
+                    contractApi.list(),
+                    analyticsApi.getMetrics()
                 ]);
                 setBatches(hRes.data.results || hRes.data || []);
                 setContracts(cRes.data.results || cRes.data || []);
+                setMetrics(mRes.data);
             } catch (err) {
                 console.error('Error fetching Offtaker data:', err);
             } finally {
@@ -125,20 +131,65 @@ const OfftakerDashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Stats */}
-                        <div className="lg:col-span-2 space-y-6">
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Marketplace Interaction</h3>
+                        {/* Analytics Row */}
+                        <div className="lg:col-span-2 space-y-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                {/* Fulfillment Radar */}
+                                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-xl shadow-black/5">
+                                    <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1">Contract Health</h3>
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Fulfillment across commodities</p>
+                                    <div className="h-[300px]">
+                                        {metrics?.charts?.contract_performance && (
+                                            <ContractPerformanceRadar data={metrics.charts.contract_performance} />
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Payout Speed / Market Stats */}
+                                <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-xl shadow-black/5 flex flex-col justify-between">
+                                    <div>
+                                        <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight mb-1">Capital Velocity</h3>
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6">Average settlement time</p>
+                                        <div className="flex items-baseline gap-2 mb-2">
+                                            <span className="text-5xl font-black text-primary">
+                                                {(metrics?.metrics?.avg_payment_speed_minutes ?? 0).toFixed(0)}
+                                            </span>
+                                            <span className="text-lg font-bold text-slate-400">min</span>
+                                        </div>
+                                        <p className="text-sm text-slate-500 font-medium">Vunachain Trust-Link settlements are ~400x faster than traditional trade finance.</p>
+                                    </div>
+                                    <div className="mt-8 grid grid-cols-2 gap-4">
+                                        <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/10">
+                                            <p className="text-[10px] font-black text-blue-600 uppercase mb-1">Risk Rating</p>
+                                            <p className="text-xl font-black text-slate-900 dark:text-white">AAA</p>
+                                        </div>
+                                        <div className="p-4 bg-green-500/5 rounded-xl border border-green-500/10">
+                                            <p className="text-[10px] font-black text-green-600 uppercase mb-1">Verified MT</p>
+                                            <p className="text-xl font-black text-slate-900 dark:text-white">{metrics?.metrics?.total_volume_mt ?? 0}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Marketplace Interaction (Brief Stats) */}
+                            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-xl shadow-black/5">
+                                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Marketplace Pulse</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                     {[
                                         { label: 'Active Needs', value: contracts.filter(c => c.status === 'OPEN').length, color: 'blue' },
                                         { label: 'Verified Batches', value: batches.length, color: 'green' },
                                         { label: 'Risk Flagged', value: 0, color: 'red' },
                                     ].map((stat, i) => (
-                                        <div key={i} className="flex flex-col gap-2 rounded-lg p-6 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-                                            <p className="text-xs font-bold text-slate-500 uppercase tracking-tighter mb-2">{stat.label}</p>
+                                        <motion.div 
+                                            key={i} 
+                                            initial={{ opacity: 0, scale: 0.95 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: i * 0.1 }}
+                                            className="flex flex-col gap-2 rounded-xl p-6 bg-gray-50/50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800"
+                                        >
+                                            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">{stat.label}</p>
                                             <p className={`text-3xl font-black text-${stat.color}-600 dark:text-${stat.color}-400`}>{stat.value}</p>
-                                        </div>
+                                        </motion.div>
                                     ))}
                                 </div>
                             </div>

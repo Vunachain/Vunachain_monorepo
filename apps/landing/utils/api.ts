@@ -9,7 +9,7 @@ const API_BASE_URL = isProduction
     ? 'https://vunachainbackend-production.up.railway.app/api'
     : 'http://localhost:8000/api';
 
-interface APIResponse<T = any> {
+interface APIResponse<T = unknown> {
     success: boolean;
     data?: T;
     error?: string;
@@ -38,7 +38,7 @@ interface ROIInteractionData {
 /**
  * Generic POST request handler
  */
-async function post<T>(endpoint: string, data: any): Promise<APIResponse<T>> {
+async function post<T>(endpoint: string, data: unknown): Promise<APIResponse<T>> {
     try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: 'POST',

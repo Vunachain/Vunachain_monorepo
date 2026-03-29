@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
-import Map, { Source, Layer, NavigationControl, FullscreenControl, ScaleControl, GeolocateControl, Popup } from 'react-map-gl/mapbox';
+import React, { useMemo, useState } from 'react';
+import Map, { Source, Layer, NavigationControl, FullscreenControl, ScaleControl, GeolocateControl, Popup, type FillLayer, type CircleLayer, type MapMouseEvent } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { type FeatureCollection } from 'geojson';
 import { Plot } from '../types';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
@@ -13,43 +14,39 @@ interface MapComponentProps {
 }
 
 const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSatellite = true, activeLayers = [] }) => {
-    // Center of Kenya
-    const initialViewState = {
+    const [viewState, setViewState] = useState({
         longitude: 37.9062,
         latitude: 0.0236,
         zoom: 6
-    };
+    });
 
     const [popupInfo, setPopupInfo] = React.useState<Plot | null>(null);
 
-    // Prepare GeoJSON data for boundaries
-    const geojsonData = useMemo(() => ({
+    const geojsonData: FeatureCollection = useMemo(() => ({
         type: 'FeatureCollection',
         features: plots
             .filter(p => p.boundary)
             .map(p => ({
                 type: 'Feature',
-                geometry: p.boundary,
+                geometry: p.boundary as any,
                 properties: {
                     id: p.id,
                     name: p.name,
                     is_compliant: p.is_eudr_compliant,
                     farmer: p.farmer,
                     last_checked: p.last_checked_at,
-                    // Mock NDVI score for rendering purposes if missing
                     ndvi_score: p.is_eudr_compliant ? 0.8 : 0.4
                 }
             }))
     }), [plots]);
 
-    // Prepare GeoJSON data for points (centroids)
-    const pointData = useMemo(() => ({
+    const pointData: FeatureCollection = useMemo(() => ({
         type: 'FeatureCollection',
         features: plots
             .filter(p => !p.boundary && p.centroid)
             .map(p => ({
                 type: 'Feature',
-                geometry: p.centroid,
+                geometry: p.centroid as any,
                 properties: {
                     id: p.id,
                     name: p.name,
@@ -63,19 +60,18 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
 
     const hasNdvi = activeLayers.includes('ndvi');
 
-    const layerStyle: any = {
+    const layerStyle: FillLayer = {
         id: 'plot-boundaries',
         type: 'fill',
         paint: {
-            // Apply gradient mapping based on NDVI if active, else standard compliance colors
             'fill-color': hasNdvi
                 ? [
                     'interpolate',
                     ['linear'],
                     ['get', 'ndvi_score'],
-                    0, '#dc2626',   // Red for low NDVI
-                    0.5, '#facc15', // Yellow 
-                    1, '#16a34a'    // Green for high NDVI
+                    0, '#dc2626',
+                    0.5, '#facc15',
+                    1, '#16a34a'
                   ]
                 : ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
             'fill-opacity': hasNdvi ? 0.7 : 0.5,
@@ -83,7 +79,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
         }
     };
 
-    const pointLayerStyle: any = {
+    const pointLayerStyle: CircleLayer = {
         id: 'plot-points',
         type: 'circle',
         paint: {
@@ -103,8 +99,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
         }
     };
 
-    // Dummy Pest/Soil anomaly data to demonstrate other layers
-    const anomaliesData = useMemo(() => ({
+    const anomaliesData: FeatureCollection = useMemo(() => ({
         type: 'FeatureCollection',
         features: plots.slice(0, 3).map(p => ({
             type: 'Feature',
@@ -133,11 +128,12 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
     return (
         <div className="h-full w-full relative group">
             <Map
-                initialViewState={initialViewState}
+                {...viewState}
+                onMove={evt => setViewState(evt.viewState)}
                 mapboxAccessToken={MAPBOX_TOKEN}
                 style={{ width: '100%', height: '100%' }}
                 mapStyle={showSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/mapbox/streets-v12"}
-                onClick={(e: any) => {
+                onClick={(e: MapMouseEvent) => {
                     const feature = e.features?.[0];
                     if (feature && (feature.layer.id === 'plot-boundaries' || feature.layer.id === 'plot-points')) {
                         const plotId = feature.properties?.id;
@@ -157,16 +153,16 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 <FullscreenControl position="top-left" />
                 <ScaleControl />
 
-                <Source id="plots-source" type="geojson" data={geojsonData as any}>
+                <Source id="plots-source" type="geojson" data={geojsonData}>
                     <Layer {...layerStyle} />
                 </Source>
 
-                <Source id="points-source" type="geojson" data={pointData as any}>
+                <Source id="points-source" type="geojson" data={pointData}>
                     <Layer {...pointLayerStyle} />
                 </Source>
 
                 {activeLayers.includes('pest') && (
-                    <Source id="pest-source" type="geojson" data={anomaliesData as any}>
+                    <Source id="pest-source" type="geojson" data={anomaliesData}>
                         <Layer 
                             id="pest-heatmap"
                             type="heatmap"
