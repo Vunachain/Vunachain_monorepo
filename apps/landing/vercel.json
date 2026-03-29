@@ -1,0 +1,67 @@
+{
+    "headers": [
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "X-Frame-Options",
+                    "value": "DENY"
+                },
+                {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                },
+                {
+                    "key": "Referrer-Policy",
+                    "value": "strict-origin-when-cross-origin"
+                },
+                {
+                    "key": "Permissions-Policy",
+                    "value": "camera=(), microphone=(), geolocation=(self)"
+                },
+                {
+                    "key": "Content-Security-Policy",
+                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.clarity.ms https://j.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://api.mapbox.com https://events.mapbox.com https://vunachainbackend-production.up.railway.app wss://vunachainbackend-production.up.railway.app https://forno.celo-sepolia.celo-testnet.org https://www.google-analytics.com; worker-src blob:; frame-ancestors 'none';"
+                }
+            ]
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/api(.*)",
+            "destination": "https://vunachainbackend-production.up.railway.app/api$1"
+        },
+        {
+            "source": "/admin(.*)",
+            "destination": "https://vunachainbackend-production.up.railway.app/admin$1"
+        },
+        {
+            "source": "/admin-test(.*)",
+            "destination": "https://vunachainbackend-production.up.railway.app/admin$1"
+        },
+        {
+            "source": "/static/admin/(.*)",
+            "destination": "https://vunachainbackend-production.up.railway.app/static/admin/$1"
+        },
+        {
+            "source": "/static/jazzmin/(.*)",
+            "destination": "https://vunachainbackend-production.up.railway.app/static/jazzmin/$1"
+        },
+        {
+            "source": "/static/vendor/(.*)",
+            "destination": "https://vunachainbackend-production.up.railway.app/static/vendor/$1"
+        },
+        {
+            "source": "/sitemap.xml",
+            "destination": "/sitemap.xml"
+        },
+        {
+            "source": "/robots.txt",
+            "destination": "/robots.txt"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}

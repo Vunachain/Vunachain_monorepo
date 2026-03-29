@@ -1,0 +1,23 @@
+{
+  "name": "vunachain",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.20.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "clean": "turbo clean",
+    "dev:landing": "turbo dev --filter=@vunachain/landing",
+    "dev:cms": "turbo dev --filter=@vunachain/cms",
+    "dev:protocol": "turbo dev --filter=@vunachain/protocol"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.2"
+  }
+}

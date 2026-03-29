@@ -1,0 +1,10 @@
+{
+  "name": "@vunachain/backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "source venv/bin/activate && python manage.py runserver",
+    "test": "source venv/bin/activate && python manage.py test",
+    "install": "python -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+  }
+}

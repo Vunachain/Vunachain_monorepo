@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+
+# Prevent indexing of temporary or development files
+Disallow: /*.save$
+Disallow: /*.previous$
+
+Sitemap: https://vunachain.com/sitemap.xml

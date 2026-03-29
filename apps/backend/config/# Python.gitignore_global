@@ -1,0 +1,53 @@
+# Python
+venv/
+backend/venv/
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+*.sqlite3
+*.sqlite
+.Python
+
+# Django
+*.log
+local_settings.py
+/media/
+/staticfiles/
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+.next/
+out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.nyc_output/
+coverage/
+
+# Build outputs
+backend/staticfiles/
+Vunachain_landing/dist/
