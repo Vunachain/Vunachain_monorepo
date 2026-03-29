@@ -70,16 +70,17 @@ class Command(BaseCommand):
 
         persona_map = [
             # (username, email, group_names, is_staff, is_superuser)
-            ('admin',         'admin@vunachain.com',         ['System Admin'],       True,  True),
-            ('gis_admin',     'gis@vunachain.com',           ['GIS Admin'],          True,  False),
-            ('support',       'support@vunachain.com',       ['Customer Support'],   True,  False),
-            ('CoopManager1',  'cm1@vunachain.com',           ['CoopManager'],        False, False),
-            ('CoopManager2',  'cm2@vunachain.com',           ['CoopManager'],        False, False),
-            ('FieldAgent1',   'fa1@vunachain.com',           ['FieldAgent'],         False, False),
-            ('FieldAgent2',   'fa2@vunachain.com',           ['FieldAgent'],         False, False),
-            ('Agro1',         'agro1@vunachain.com',         ['Agronomist'],         False, False),
-            ('Offtaker1',     'offtaker1@vunachain.com',     ['Offtaker'],           False, False),
-            ('Auditor1',      'auditor1@vunachain.com',      ['Auditor'],            False, False),
+            ('admin',                     'admin@vunachain.com',             ['System Admin'],       True,  True),
+            ('gis_admin',                 'gis@vunachain.com',               ['GIS Admin'],          True,  False),
+            ('support',                   'support@vunachain.com',           ['Customer Support'],   True,  False),
+            ('nyeri_admin',               'nyeri@vunachain.com',             ['CoopManager'],        False, False),
+            ('elgon_admin',               'elgon@vunachain.com',             ['CoopManager'],        False, False),
+            ('field_agent',               'fa1@vunachain.com',               ['FieldAgent'],         False, False),
+            ('FieldAgent2',               'fa2@vunachain.com',               ['FieldAgent'],         False, False),
+            ('agronomist',                'agro1@vunachain.com',             ['Agronomist'],         False, False),
+            ('coffee_intl_buyer',         'sourcing@coffeeintl.com',         ['Offtaker'],           False, False),
+            ('global_grains_offtaker',    'ops@globalgrains.com',            ['Offtaker'],           False, False),
+            ('auditor',                   'auditor1@vunachain.com',          ['Auditor'],            False, False),
         ]
 
         user_objects = {}
@@ -103,8 +104,8 @@ class Command(BaseCommand):
         # ──────────────────────────────────────────────
         self.stdout.write('Step 3/8 — Seeding Kenyan coffee cooperatives...')
         coops_raw = [
-            ('Nyeri Highlands Farmers Cooperative',  'Nyeri County, Kenya',     'CoopManager1'),
-            ('Kirinyaga Coffee Growers Society',      'Kirinyaga County, Kenya', 'CoopManager2'),
+            ('Nyeri Highlands Farmers Cooperative',  'Nyeri County, Kenya',     'nyeri_admin'),
+            ('Kirinyaga Coffee Growers Society',      'Kirinyaga County, Kenya', 'elgon_admin'),
         ]
         coops = []
         for name, location, manager_username in coops_raw:
@@ -274,7 +275,7 @@ class Command(BaseCommand):
         contracts_raw = [
             {
                 'commodity': 'Premium Washed Arabica (Nyeri AA)',
-                'buyer': user_objects['Offtaker1'],
+                'buyer': user_objects['coffee_intl_buyer'],
                 'cooperative': coops[0],
                 'target_volume_kg': 5000,
                 'price_per_kg_cusd': 4.75,
@@ -284,7 +285,7 @@ class Command(BaseCommand):
             },
             {
                 'commodity': 'Natural Process Arabica (Kirinyaga AB)',
-                'buyer': user_objects['Offtaker1'],
+                'buyer': user_objects['global_grains_offtaker'],
                 'cooperative': coops[1],
                 'target_volume_kg': 3000,
                 'price_per_kg_cusd': 5.20,
@@ -294,7 +295,7 @@ class Command(BaseCommand):
             },
             {
                 'commodity': 'Robusta Blend (Bulk)',
-                'buyer': user_objects['Offtaker1'],
+                'buyer': user_objects['coffee_intl_buyer'],
                 'cooperative': None,
                 'target_volume_kg': 10000,
                 'price_per_kg_cusd': 2.80,
