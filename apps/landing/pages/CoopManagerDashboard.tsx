@@ -404,32 +404,6 @@ const CoopManagerDashboard: React.FC = () => {
             )}
         </div>
     );
-
-            {/* Modal Overlay for Wizard */}
-            {showWizard && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 h-screen overflow-y-auto">
-                    <div className="my-auto w-full max-w-2xl">
-                        <FarmerOnboardingWizard 
-                            onSuccess={() => { 
-                                setShowWizard(false); 
-                                fetchData(); // Refresh data!
-                            }} 
-                            onCancel={() => setShowWizard(false)} 
-                        />
-                    </div>
-                </div>
-            )}
-
-            {selectedContract && (
-                <ContractDetailModal
-                    contract={selectedContract}
-                    onClose={() => setSelectedContract(null)}
-                    onSign={selectedContract.status === 'OPEN' ? handleAcceptContract : undefined}
-                    userRole="coop_manager"
-                />
-            )}
-        </div>
-    );
 };
 
 export default CoopManagerDashboard;

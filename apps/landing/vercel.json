@@ -21,7 +21,7 @@
                 },
                 {
                     "key": "Content-Security-Policy",
-                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.googletagmanager.com https://www.clarity.ms https://j.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: https://*.mapbox.com; connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com https://vunachainbackend-production.up.railway.app wss://vunachainbackend-production.up.railway.app https://forno.celo-sepolia.celo-testnet.org https://www.google-analytics.com; worker-src 'self' blob:; frame-ancestors 'none';"
+                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://www.googletagmanager.com https://www.clarity.ms https://j.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https: https://*.mapbox.com https://*.sanity.io; connect-src 'self' https://*.mapbox.com https://api.mapbox.com https://events.mapbox.com https://vunachainbackend-production.up.railway.app wss://vunachainbackend-production.up.railway.app https://forno.celo-sepolia.celo-testnet.org https://www.google-analytics.com https://*.sanity.io https://*.apicdn.sanity.io; worker-src 'self' blob:; frame-ancestors 'none';"
                 }
             ]
         }

@@ -1,4 +1,7 @@
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import { farmerApi, plotApi, complianceApi, farmEventApi } from '../lib/api';
+import { Farmer, Plot, FarmEvent } from '../types';
 
 const Dashboard: React.FC = () => {
     const [farmers, setFarmers] = useState<Farmer[]>([]);
