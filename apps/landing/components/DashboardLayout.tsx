@@ -46,6 +46,8 @@ const getLinksForRole = (role: UserRole): NavLink[] => {
                 { icon: 'agriculture', label: 'Harvest Registry', path: '/dashboard/audit/harvests' },
                 { icon: 'verified_user', label: 'Compliance Audit', path: '/dashboard/audit/compliance' },
                 { icon: 'photo_camera', label: 'Field Evidence', path: '/dashboard/audit/field_events' },
+                { icon: 'monitoring', label: 'System Status', path: '/dashboard/audit/system' },
+                { icon: 'manage_accounts', label: 'User Management', path: '/dashboard/audit/users' },
             ];
         case 'CaseOfficer':
             return [

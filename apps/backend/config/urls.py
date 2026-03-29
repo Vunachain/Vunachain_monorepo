@@ -28,6 +28,12 @@ from rest_framework_simplejwt.views import (
 )
 from blockchain_sync.api.auth import CustomTokenObtainPairView
 
+from rest_framework.routers import DefaultRouter
+from .admin_api import SystemHealthView, UserManagementViewSet
+
+router = DefaultRouter()
+router.register(r'users', UserManagementViewSet, basename='admin-user-management')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Authentication
@@ -41,4 +47,9 @@ urlpatterns = [
     path('api/blockchain/', include('blockchain_sync.urls')),
     path('api/debug-db/', permission_classes([IsAdminUser])(debug_db_view)),
     path('api/health/', health_check),
+    
+    # New Admin API
+    path('api/v1/admin/system/', SystemHealthView.as_view(), name='admin-system-health'),
+    path('api/v1/admin/', include(router.urls)),
 ]
+

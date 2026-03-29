@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import { Users, ShieldCheck, Globe, AlertTriangle, Download, Loader, MapPin } from 'lucide-react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { 
+    Users, ShieldCheck, Shield, Globe, AlertTriangle, Download, 
+    Loader, MapPin, Activity, Cpu, Database, HardDrive, 
+    Clock, RefreshCw, Loader2
+} from 'lucide-react';
 import MapComponent from '../components/MapComponent';
 import EventLogForm from '../components/EventLogForm';
-import { farmerApi, plotApi, complianceApi, farmEventApi } from '../lib/api';
+import { HealthMetricCard, UserTable } from '../components/AdminComponents';
+import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi } from '../lib/api';
 import { Farmer, Plot, FarmEvent } from '../types';
 
 const Dashboard: React.FC = () => {
@@ -14,7 +19,14 @@ const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [downloadingCert, setDownloadingCert] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    
+    // Admin States
+    const [systemHealth, setSystemHealth] = useState<any>(null);
+    const [usersList, setUsersList] = useState<any[]>([]);
+    const [isPollingHealth, setIsPollingHealth] = useState(false);
+    
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const token = localStorage.getItem('vunachain_token');
@@ -44,6 +56,60 @@ const Dashboard: React.FC = () => {
         };
         fetchData();
     }, []);
+
+    // Specific effect for Admin views
+    useEffect(() => {
+        if (!isAuthenticated) return;
+
+        if (location.pathname.includes('/system')) {
+            fetchSystemHealth();
+            const interval = setInterval(fetchSystemHealth, 30000); // 30s auto-refresh as approved
+            return () => clearInterval(interval);
+        } else if (location.pathname.includes('/users')) {
+            fetchUsers();
+        }
+    }, [location.pathname, isAuthenticated]);
+
+    const fetchSystemHealth = async () => {
+        setIsPollingHealth(true);
+        try {
+            const res = await adminApi.getHealth();
+            setSystemHealth(res.data);
+        } catch (err) {
+            console.error('Failed to fetch health metrics:', err);
+        } finally {
+            setIsPollingHealth(false);
+        }
+    };
+
+    const fetchUsers = async () => {
+        try {
+            const res = await adminApi.getUsers();
+            setUsersList(res.data);
+        } catch (err) {
+            console.error('Failed to fetch users:', err);
+        }
+    };
+
+    const handleUpdateUser = async (id: number, data: any) => {
+        try {
+            await adminApi.updateUser(id, data);
+            fetchUsers();
+        } catch (err) {
+            alert('Failed to update user permissions.');
+        }
+    };
+
+    const handleDeactivateUser = async (id: number) => {
+        if (window.confirm('Are you sure you want to deactivate this account?')) {
+            try {
+                await adminApi.deactivateUser(id);
+                fetchUsers();
+            } catch (err) {
+                alert('Failed to deactivate user.');
+            }
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('vunachain_token');
@@ -289,6 +355,90 @@ const Dashboard: React.FC = () => {
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                        } />
+
+                        {/* Admin Specific Routes */}
+                        <Route path="system" element={
+                            <div className="space-y-8 animate-fade-in">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                        <Activity size={20} className="text-primary" />
+                                        System Health Observability
+                                    </h2>
+                                    <button 
+                                        onClick={fetchSystemHealth}
+                                        disabled={isPollingHealth}
+                                        className="p-2 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                                    >
+                                        <RefreshCw size={16} className={`${isPollingHealth ? 'animate-spin' : ''}`} />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <HealthMetricCard 
+                                        title="Database Connectivity" 
+                                        value={systemHealth?.services.database.status || 'Checking...'}
+                                        status={systemHealth?.services.database.status === 'connected' ? 'healthy' : systemHealth ? 'error' : 'loading'}
+                                        icon={<Database size={24} />}
+                                        subtitle={`Latency: ${systemHealth?.services.database.latency || 'N/A'}`}
+                                    />
+                                    <HealthMetricCard 
+                                        title="Blockchain Sync" 
+                                        value={systemHealth?.services.blockchain_sync.status || 'Unknown'}
+                                        status={systemHealth?.services.blockchain_sync.status === 'active' ? 'healthy' : systemHealth ? 'warning' : 'loading'}
+                                        icon={<Shield size={24} />}
+                                        subtitle={`Last: ${systemHealth?.services.blockchain_sync.last_synced_batch || 'None'}`}
+                                    />
+                                    <HealthMetricCard 
+                                        title="Memory Footprint" 
+                                        value={systemHealth?.infrastructure.memory_usage_mb ? `${systemHealth.infrastructure.memory_usage_mb} MB` : '0 MB'}
+                                        status={systemHealth ? (systemHealth.infrastructure.memory_usage_mb > 500 ? 'warning' : 'healthy') : 'loading'}
+                                        icon={<HardDrive size={24} />}
+                                        subtitle="RSS (Process)"
+                                    />
+                                    <HealthMetricCard 
+                                        title="System Uptime" 
+                                        value={systemHealth?.infrastructure.process_uptime || 'N/A'}
+                                        status={systemHealth ? 'healthy' : 'loading'}
+                                        icon={<Clock size={24} />}
+                                        subtitle={`v${systemHealth?.infrastructure.python_version.split(' ')[0] || ''}`}
+                                    />
+                                </div>
+
+                                <div className="p-6 rounded-xl border border-blue-500/20 bg-blue-500/5 flex items-start gap-4">
+                                    <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
+                                        <Activity size={20} />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-blue-900 dark:text-blue-100">Live Infrastructure Insights</h4>
+                                        <p className="text-sm text-blue-600/80 dark:text-blue-400/80 mt-1">
+                                            The platform is running on <strong>{systemHealth?.infrastructure.os || '...'}</strong> with {systemHealth?.infrastructure.cpu_percent}% CPU utilization.
+                                            Blockchain events are being polled via the <code>VunachainListener</code> service.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        } />
+
+                        <Route path="users" element={
+                            <div className="space-y-6 animate-fade-in">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <h2 className="text-xl font-black text-slate-900 dark:text-white">User Management</h2>
+                                        <p className="text-sm text-slate-500 font-medium">Govern access controls and monitor administrative roles across the platform.</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-md shadow-primary/20">
+                                            <Users size={14} /> Add Staff Member
+                                        </button>
+                                    </div>
+                                </div>
+                                <UserTable 
+                                    users={usersList} 
+                                    onUpdate={handleUpdateUser}
+                                    onDeactivate={handleDeactivateUser}
+                                />
                             </div>
                         } />
                     </Routes>

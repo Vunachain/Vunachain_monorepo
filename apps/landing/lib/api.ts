@@ -121,4 +121,11 @@ export const analyticsApi = {
     getMetrics: () => api.get('/analytics/'),
 };
 
+export const adminApi = {
+    getHealth: () => api.get('/admin/system/'),
+    getUsers: () => api.get('/admin/users/'),
+    updateUser: (id: number, data: any) => api.patch(`/admin/users/${id}/`, data),
+    deactivateUser: (id: number) => api.delete(`/admin/users/${id}/`),
+};
+
 export default api;
