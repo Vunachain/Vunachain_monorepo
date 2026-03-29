@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Users, ShieldCheck, Globe, AlertTriangle, Download, Loader, MapPin } from 'lucide-react';
+import MapComponent from '../components/MapComponent';
+import EventLogForm from '../components/EventLogForm';
 import { farmerApi, plotApi, complianceApi, farmEventApi } from '../lib/api';
 import { Farmer, Plot, FarmEvent } from '../types';
 
