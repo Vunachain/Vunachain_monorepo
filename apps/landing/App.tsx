@@ -63,32 +63,32 @@ const App: React.FC = () => {
                 <DashboardLayout><Dashboard /></DashboardLayout>
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/coop" element={
+            <Route path="/dashboard/coop/*" element={
               <ProtectedRoute allowedRoles={['CoopManager']}>
                 <DashboardLayout><CoopManagerDashboard /></DashboardLayout>
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/field" element={
+            <Route path="/dashboard/field/*" element={
               <ProtectedRoute allowedRoles={['FieldAgent']}>
                 <DashboardLayout><FieldAgentDashboard /></DashboardLayout>
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/agro" element={
+            <Route path="/dashboard/agro/*" element={
               <ProtectedRoute allowedRoles={['Agronomist']}>
                 <DashboardLayout><AgronomistDashboard /></DashboardLayout>
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/offtaker" element={
+            <Route path="/dashboard/offtaker/*" element={
               <ProtectedRoute allowedRoles={['Offtaker']}>
                 <DashboardLayout><OfftakerDashboard /></DashboardLayout>
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/audit" element={
+            <Route path="/dashboard/audit/*" element={
               <ProtectedRoute allowedRoles={['Auditor']}>
                 <DashboardLayout><Dashboard /></DashboardLayout>
               </ProtectedRoute>
             } />
-            <Route path="/dashboard/case" element={
+            <Route path="/dashboard/case/*" element={
               <ProtectedRoute allowedRoles={['CaseOfficer']}>
                 <DashboardLayout><CaseOfficerDashboard /></DashboardLayout>
               </ProtectedRoute>

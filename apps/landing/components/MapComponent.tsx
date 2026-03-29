@@ -9,9 +9,10 @@ interface MapComponentProps {
     plots: Plot[];
     onPlotClick?: (plot: Plot) => void;
     showSatellite?: boolean;
+    activeLayers?: string[];
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSatellite = true }) => {
+const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSatellite = true, activeLayers = [] }) => {
     // Center of Kenya
     const initialViewState = {
         longitude: 37.9062,
@@ -34,7 +35,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                     name: p.name,
                     is_compliant: p.is_eudr_compliant,
                     farmer: p.farmer,
-                    last_checked: p.last_checked_at
+                    last_checked: p.last_checked_at,
+                    // Mock NDVI score for rendering purposes if missing
+                    ndvi_score: p.is_eudr_compliant ? 0.8 : 0.4
                 }
             }))
     }), [plots]);
@@ -52,17 +55,30 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                     name: p.name,
                     is_compliant: p.is_eudr_compliant,
                     farmer: p.farmer,
-                    last_checked: p.last_checked_at
+                    last_checked: p.last_checked_at,
+                    ndvi_score: p.is_eudr_compliant ? 0.8 : 0.4
                 }
             }))
     }), [plots]);
+
+    const hasNdvi = activeLayers.includes('ndvi');
 
     const layerStyle: any = {
         id: 'plot-boundaries',
         type: 'fill',
         paint: {
-            'fill-color': ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
-            'fill-opacity': 0.5,
+            // Apply gradient mapping based on NDVI if active, else standard compliance colors
+            'fill-color': hasNdvi
+                ? [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'ndvi_score'],
+                    0, '#dc2626',   // Red for low NDVI
+                    0.5, '#facc15', // Yellow 
+                    1, '#16a34a'    // Green for high NDVI
+                  ]
+                : ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
+            'fill-opacity': hasNdvi ? 0.7 : 0.5,
             'fill-outline-color': '#ffffff'
         }
     };
@@ -72,11 +88,35 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
         type: 'circle',
         paint: {
             'circle-radius': 8,
-            'circle-color': ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
+            'circle-color': hasNdvi
+                ? [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'ndvi_score'],
+                    0, '#dc2626',
+                    0.5, '#facc15',
+                    1, '#16a34a'
+                  ]
+                : ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
             'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff'
         }
     };
+
+    // Dummy Pest/Soil anomaly data to demonstrate other layers
+    const anomaliesData = useMemo(() => ({
+        type: 'FeatureCollection',
+        features: plots.slice(0, 3).map(p => ({
+            type: 'Feature',
+            geometry: p.centroid || (p.boundary as any)?.coordinates?.[0]?.[0]?.[0] ? {
+                type: 'Point',
+                coordinates: p.centroid?.coordinates || (p.boundary as any).coordinates[0][0][0]
+            } : { type: 'Point', coordinates: [37.9, 0.02] },
+            properties: {
+                risk: 'High Pest Risk'
+            }
+        }))
+    }), [plots]);
 
     if (!MAPBOX_TOKEN) {
         return (
@@ -99,14 +139,14 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 mapStyle={showSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/mapbox/streets-v12"}
                 onClick={(e: any) => {
                     const feature = e.features?.[0];
-                    if (feature) {
+                    if (feature && (feature.layer.id === 'plot-boundaries' || feature.layer.id === 'plot-points')) {
                         const plotId = feature.properties?.id;
                         const plot = plots.find(p => p.id === plotId);
                         if (plot) {
                             setPopupInfo(plot);
                             onPlotClick?.(plot);
                         }
-                    } else {
+                    } else if (!feature) {
                         setPopupInfo(null);
                     }
                 }}
@@ -124,6 +164,31 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 <Source id="points-source" type="geojson" data={pointData as any}>
                     <Layer {...pointLayerStyle} />
                 </Source>
+
+                {activeLayers.includes('pest') && (
+                    <Source id="pest-source" type="geojson" data={anomaliesData as any}>
+                        <Layer 
+                            id="pest-heatmap"
+                            type="heatmap"
+                            paint={{
+                                'heatmap-weight': 1,
+                                'heatmap-intensity': 1,
+                                'heatmap-color': [
+                                    'interpolate',
+                                    ['linear'],
+                                    ['heatmap-density'],
+                                    0, 'rgba(33,102,172,0)',
+                                    0.2, 'rgba(103,169,207,0.5)',
+                                    0.4, 'rgba(209,229,240,0.8)',
+                                    0.6, 'rgba(253,219,199,0.9)',
+                                    0.8, 'rgba(239,138,98,1)',
+                                    1, 'rgba(178,24,43,1)'
+                                ],
+                                'heatmap-radius': 40
+                            }}
+                        />
+                    </Source>
+                )}
 
                 {popupInfo && (
                     <Popup

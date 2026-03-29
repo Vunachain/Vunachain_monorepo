@@ -13,41 +13,46 @@ const getLinksForRole = (role: UserRole): NavLink[] => {
         case 'CoopManager':
             return [
                 { icon: 'dashboard', label: 'Overview', path: '/dashboard/coop' },
-                { icon: 'groups', label: 'My Farmers', path: '/dashboard/coop?tab=farmers' },
-                { icon: 'agriculture', label: 'Harvest Logs', path: '/dashboard/coop?tab=harvests' },
-                { icon: 'description', label: 'Supply Contracts', path: '/dashboard/coop?tab=contracts' },
-                { icon: 'payments', label: 'Payout Status', path: '/dashboard/coop?tab=payouts' },
+                { icon: 'groups', label: 'My Farmers', path: '/dashboard/coop/farmers' },
+                { icon: 'agriculture', label: 'Harvest Logs', path: '/dashboard/coop/harvests' },
+                { icon: 'description', label: 'Supply Contracts', path: '/dashboard/coop/contracts' },
+                { icon: 'payments', label: 'Payout Status', path: '/dashboard/coop/payouts' },
             ];
         case 'FieldAgent':
             return [
                 { icon: 'checklist', label: 'Review Queue', path: '/dashboard/field' },
-                { icon: 'person_add', label: 'Farmer Onboarding', path: '/dashboard/field?view=onboarding' },
-                { icon: 'add_circle', label: 'New Collection', path: '/dashboard/field?view=log' },
+                { icon: 'person_add', label: 'Farmer Onboarding', path: '/dashboard/field/onboarding' },
+                { icon: 'add_circle', label: 'New Collection', path: '/dashboard/field/log' },
             ];
         case 'Agronomist':
             return [
                 { icon: 'analytics', label: 'Plot Overview', path: '/dashboard/agro' },
-                { icon: 'verified_user', label: 'Verification Queue', path: '/dashboard/agro?tab=verification' },
-                { icon: 'insights', label: 'Yield Forecasting', path: '/dashboard/agro?tab=forecasting' },
-                { icon: 'map', label: 'Geospatial Map', path: '/dashboard/agro?tab=map' },
-                { icon: 'monitoring', label: 'Activity Logs', path: '/dashboard/agro?tab=logs' },
+                { icon: 'verified_user', label: 'Verification Queue', path: '/dashboard/agro/verification' },
+                { icon: 'insights', label: 'Yield Forecasting', path: '/dashboard/agro/forecasting' },
+                { icon: 'map', label: 'Geospatial Map', path: '/dashboard/agro/map' },
+                { icon: 'monitoring', label: 'Activity Logs', path: '/dashboard/agro/logs' },
             ];
         case 'Offtaker':
             return [
                 { icon: 'verified_user', label: 'Compliance Portal', path: '/dashboard/offtaker' },
-                { icon: 'add_shopping_cart', label: 'Post Buyer Need', path: '/dashboard/offtaker?tab=needs' },
-                { icon: 'inventory_2', label: 'Purchase History', path: '/dashboard/offtaker?tab=history' },
+                { icon: 'add_shopping_cart', label: 'Post Buyer Need', path: '/dashboard/offtaker/needs' },
+                { icon: 'inventory_2', label: 'Purchase History', path: '/dashboard/offtaker/history' },
             ];
         case 'Auditor':
             return [
-                { icon: 'dashboard', label: 'Audit Dashboard', path: '/dashboard/audit' },
+                { icon: 'dashboard', label: 'Overview', path: '/dashboard/audit' },
+                { icon: 'groups', label: 'Farmer Directory', path: '/dashboard/audit/farmers' },
+                { icon: 'map', label: 'Plot Map', path: '/dashboard/audit/plots' },
+                { icon: 'agriculture', label: 'Harvest Registry', path: '/dashboard/audit/harvests' },
+                { icon: 'verified_user', label: 'Compliance Audit', path: '/dashboard/audit/compliance' },
+                { icon: 'photo_camera', label: 'Field Evidence', path: '/dashboard/audit/field_events' },
             ];
         case 'CaseOfficer':
             return [
                 { icon: 'gavel', label: 'Market Oversight', path: '/dashboard/case' },
-                { icon: 'description', label: 'All Contracts', path: '/dashboard/case?tab=contracts' },
-                { icon: 'hub', label: 'Network Health', path: '/dashboard/case?tab=health' },
-                { icon: 'credit_score', label: 'Credit Management', path: '/dashboard/case?tab=credit' },
+                { icon: 'description', label: 'All Contracts', path: '/dashboard/case/contracts' },
+                { icon: 'hub', label: 'Network Health', path: '/dashboard/case/health' },
+                { icon: 'credit_score', label: 'Credit Management', path: '/dashboard/case/credit' },
             ];
         default:
             return [
@@ -79,7 +84,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         if (link.path.includes('?')) {
             return currentPath === link.path;
         }
-        return location.pathname === link.path && !location.search;
+        return location.pathname === link.path;
     };
 
     return (
