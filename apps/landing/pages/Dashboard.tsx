@@ -24,6 +24,7 @@ const Dashboard: React.FC = () => {
     const [systemHealth, setSystemHealth] = useState<any>(null);
     const [usersList, setUsersList] = useState<any[]>([]);
     const [isPollingHealth, setIsPollingHealth] = useState(false);
+    const [userCategory, setUserCategory] = useState<'internal' | 'external'>('internal');
     
     const navigate = useNavigate();
     const location = useLocation();
@@ -426,7 +427,11 @@ const Dashboard: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h2 className="text-xl font-black text-slate-900 dark:text-white">User Management</h2>
-                                        <p className="text-sm text-slate-500 font-medium">Govern access controls and monitor administrative roles across the platform.</p>
+                                        <p className="text-sm text-slate-500 font-medium tracking-tight">
+                                            {userCategory === 'internal' 
+                                                ? 'Govern platform administrators, auditors, and operations staff.' 
+                                                : 'Monitor and manage external partners, field agents, and offtakers.'}
+                                        </p>
                                     </div>
                                     <div className="flex gap-2">
                                         <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-xs font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-md shadow-primary/20">
@@ -434,8 +439,33 @@ const Dashboard: React.FC = () => {
                                         </button>
                                     </div>
                                 </div>
+
+                                {/* Category Tabs */}
+                                <div className="flex border-b border-gray-100 dark:border-gray-800">
+                                    <button 
+                                        onClick={() => setUserCategory('internal')}
+                                        className={`px-6 py-3 text-xs font-black uppercase tracking-widest transition-all border-b-2 ${
+                                            userCategory === 'internal' 
+                                            ? 'border-primary text-primary bg-primary/5' 
+                                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                                        }`}
+                                    >
+                                        Internal Ops
+                                    </button>
+                                    <button 
+                                        onClick={() => setUserCategory('external')}
+                                        className={`px-6 py-3 text-xs font-black uppercase tracking-widest transition-all border-b-2 ${
+                                            userCategory === 'external' 
+                                            ? 'border-primary text-primary bg-primary/5' 
+                                            : 'border-transparent text-slate-400 hover:text-slate-600'
+                                        }`}
+                                    >
+                                        External Partners
+                                    </button>
+                                </div>
+
                                 <UserTable 
-                                    users={usersList} 
+                                    users={usersList.filter(u => userCategory === 'internal' ? u.is_internal : !u.is_internal)} 
                                     onUpdate={handleUpdateUser}
                                     onDeactivate={handleDeactivateUser}
                                 />

@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../lib/api';
 import { setTokens, decodeToken, getRoleDashboardPath } from '../lib/auth';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
 
 const LoginPage: React.FC = () => {
+    const { isConnected, address } = useAccount();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -139,6 +142,85 @@ const LoginPage: React.FC = () => {
                                 'Sign In'
                             )}
                         </button>
+
+                        <div className="relative my-8">
+                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                                <div className="w-full border-t border-gray-100 dark:border-gray-800"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase tracking-widest font-black">
+                                <span className="px-4 bg-white dark:bg-gray-900 text-slate-400">Wallet Access (SocialConnect)</span>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-4 items-center">
+                            <ConnectButton.Custom>
+                                {({
+                                    account,
+                                    chain,
+                                    openAccountModal,
+                                    openChainModal,
+                                    openConnectModal,
+                                    mounted,
+                                }) => {
+                                    const ready = mounted;
+                                    const connected = ready && account && chain;
+                                    
+                                    return (
+                                        <div
+                                            {...(!ready && {
+                                                'aria-hidden': true,
+                                                'style': {
+                                                    opacity: 0,
+                                                    pointerEvents: 'none',
+                                                    userSelect: 'none',
+                                                },
+                                            })}
+                                            className="w-full"
+                                        >
+                                            {(() => {
+                                                if (!connected) {
+                                                    return (
+                                                        <button
+                                                            onClick={openConnectModal}
+                                                            type="button"
+                                                            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-bold text-slate-700 dark:text-slate-300"
+                                                        >
+                                                            <span className="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+                                                            Link Wallet for SocialConnect
+                                                        </button>
+                                                    );
+                                                }
+                                                return (
+                                                    <div className="flex flex-col gap-2 w-full">
+                                                        <div className="p-3 bg-green-500/5 border border-green-500/20 rounded-lg flex items-center justify-between">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                                                                    <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[10px] font-black uppercase tracking-widest text-green-600 dark:text-green-400">Wallet Linked</p>
+                                                                    <p className="text-xs font-mono text-slate-600 dark:text-slate-400">{account.displayName}</p>
+                                                                </div>
+                                                            </div>
+                                                            <button 
+                                                                onClick={openAccountModal}
+                                                                type="button"
+                                                                className="text-xs font-bold text-primary hover:underline"
+                                                            >
+                                                                Change
+                                                            </button>
+                                                        </div>
+                                                        <p className="text-[10px] text-center text-slate-400 leading-relaxed max-w-xs mx-auto">
+                                                            By connecting, you enable SocialConnect identity mapping for your phone number.
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </div>
+                                    );
+                                }}
+                            </ConnectButton.Custom>
+                        </div>
                     </form>
 
                     <p className="text-center text-sm text-gray-500 pt-2">

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Tooltip from './Tooltip';
 import { isProduction } from '../utils/api';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 interface NavbarProps {
   onOpenDemo: () => void;
@@ -20,7 +19,6 @@ const Navbar: React.FC<NavbarProps> = ({ onOpenDemo }) => {
     { name: 'Challenges', href: '/#challenges' },
     { name: 'Technology', href: '/#technology' },
     { name: 'ROI', href: '/#roi' },
-    ...(!isProduction ? [{ name: 'Dashboard', href: '/dashboard' }] : []),
   ];
 
   useEffect(() => {
@@ -128,11 +126,6 @@ const Navbar: React.FC<NavbarProps> = ({ onOpenDemo }) => {
             <a href="/login" className="hidden md:flex h-9 items-center justify-center rounded-lg border border-gray-200 dark:border-white/20 bg-transparent px-4 text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-white/5 hover:border-gray-300 dark:hover:border-white/30 active:bg-gray-200 dark:active:bg-white/10 active:scale-95 transition-all duration-200">
               Login
             </a>
-          )}
-          {!isProduction && (
-            <div className="hidden md:flex ml-2">
-              <ConnectButton />
-            </div>
           )}
           <button
             onClick={onOpenDemo}

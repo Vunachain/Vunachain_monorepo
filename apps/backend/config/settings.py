@@ -107,6 +107,7 @@ INSTALLED_APPS = [
     'lead_capture',
     'blockchain_sync',
     'blockchain',
+    'user_management',
 ]
 
 # Add GeoDjango only when PostGIS is available (production)

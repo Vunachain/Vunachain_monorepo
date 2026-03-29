@@ -13,14 +13,24 @@ import time
 
 class UserSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
+    is_internal = serializers.SerializerMethodField()
     
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'roles']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'roles', 'is_internal']
         read_only_fields = ['id', 'date_joined']
 
     def get_roles(self, obj):
         return list(obj.groups.values_list('name', flat=True))
+
+    def get_is_internal(self, obj):
+        # Internal roles as specified by the user
+        internal_roles = {
+            'Admin', 'Staff', 'Auditor', 'Customer Support', 
+            'Data Validator', 'GIS Admin', 'Programme Officer'
+        }
+        roles = set(obj.groups.values_list('name', flat=True))
+        return obj.is_staff or bool(roles & internal_roles)
 
 # --- Views ---
 

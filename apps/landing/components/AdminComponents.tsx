@@ -56,6 +56,7 @@ interface User {
     is_active: boolean;
     date_joined: string;
     roles: string[];
+    is_internal: boolean;
 }
 
 interface UserTableProps {
@@ -65,6 +66,13 @@ interface UserTableProps {
 }
 
 export const UserTable: React.FC<UserTableProps> = ({ users, onUpdate, onDeactivate }) => {
+    const getRoleBadgeColor = (role: string, isInternal: boolean) => {
+        if (isInternal) {
+            return 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400';
+        }
+        return 'bg-primary/10 text-primary';
+    };
+
     return (
         <div className="overflow-hidden rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
             <div className="overflow-x-auto">
@@ -102,7 +110,10 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onUpdate, onDeactiv
                                             </span>
                                         )}
                                         {user.roles.map(role => (
-                                            <span key={role} className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black rounded-full uppercase">
+                                            <span 
+                                                key={role} 
+                                                className={`px-2 py-0.5 text-[10px] font-black rounded-full uppercase ${getRoleBadgeColor(role, user.is_internal)}`}
+                                            >
                                                 {role}
                                             </span>
                                         ))}

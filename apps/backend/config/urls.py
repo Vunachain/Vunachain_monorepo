@@ -51,5 +51,8 @@ urlpatterns = [
     # New Admin API
     path('api/v1/admin/system/', SystemHealthView.as_view(), name='admin-system-health'),
     path('api/v1/admin/', include(router.urls)),
+    
+    # User Management (Profiles & Settings)
+    path('api/v1/user/', include('user_management.urls')),
 ]
 

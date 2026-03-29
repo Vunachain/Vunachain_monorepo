@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 
-export type UserRole = 'CoopManager' | 'FieldAgent' | 'Agronomist' | 'Offtaker' | 'Auditor' | 'CaseOfficer' | 'Staff' | 'User';
+export type UserRole = 'CoopManager' | 'FieldAgent' | 'Agronomist' | 'Offtaker' | 'Auditor' | 'CaseOfficer' | 'Staff' | 'User' | 'Admin';
 
 export interface JWTPayload {
     token_type: string;

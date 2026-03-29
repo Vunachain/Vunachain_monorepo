@@ -187,11 +187,10 @@ const Hero: React.FC = () => {
             </div>
           </article>
 
-          {/* Right Map Interface */}
+          {/* Right Map Interface (Optimized: No iframe/services) */}
           <figure className="relative lg:ml-auto w-full max-w-lg lg:max-w-none group">
-            <div className="relative aspect-square md:aspect-[4/3] w-full overflow-hidden rounded-lg border border-gray-200 dark:border-white/10 bg-surface-light dark:bg-surface-dark shadow-2xl transition-transform duration-700 hover:scale-[1.01]">
+            <div className="relative aspect-square md:aspect-[4/3] w-full overflow-hidden rounded-lg border border-gray-200 dark:border-white/10 bg-neutral-900 shadow-2xl transition-transform duration-700 hover:scale-[1.01]">
 
-              {/* Map Background - Nyeri Satellite View */}
               {/* Map Background - Nyeri Satellite View */}
               {showMap ? (
                 <iframe
@@ -206,11 +205,9 @@ const Hero: React.FC = () => {
                 <div className="absolute inset-0 bg-neutral-900/50 animate-pulse" aria-hidden="true" />
               )}
 
-              {/* Gradient Overlay */}
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-background-dark/80 via-transparent to-transparent pointer-events-none"
-                aria-hidden="true"
-              ></div>
+              {/* Graduate Template Overlay (Restored with Map) */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
+
 
               {/* Card Overlay */}
               <div className="absolute bottom-6 left-6 right-6 p-4 rounded-lg bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-sm border border-gray-100 dark:border-white/10 shadow-sm z-10 transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-xl">

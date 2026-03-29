@@ -8,6 +8,10 @@
     "dev": "sanity dev",
     "start": "sanity start",
     "build": "sanity build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
     "deploy": "sanity deploy",
     "deploy-graphql": "sanity graphql deploy"
   },
@@ -22,16 +26,13 @@
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
+    "@vunachain/config-eslint": "workspace:*",
+    "@vunachain/config-typescript": "workspace:*",
+    "@vunachain/config-prettier": "workspace:*",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@types/react": "^19.1",
     "eslint": "^9.28",
     "prettier": "^3.5",
     "typescript": "^5.8"
-  },
-  "prettier": {
-    "semi": false,
-    "printWidth": 100,
-    "bracketSpacing": false,
-    "singleQuote": true
   }
 }

@@ -39,15 +39,16 @@ const getLinksForRole = (role: UserRole): NavLink[] => {
                 { icon: 'inventory_2', label: 'Purchase History', path: '/dashboard/offtaker/history' },
             ];
         case 'Auditor':
+        case 'Staff':
             return [
-                { icon: 'dashboard', label: 'Overview', path: '/dashboard/audit' },
-                { icon: 'groups', label: 'Farmer Directory', path: '/dashboard/audit/farmers' },
-                { icon: 'map', label: 'Plot Map', path: '/dashboard/audit/plots' },
-                { icon: 'agriculture', label: 'Harvest Registry', path: '/dashboard/audit/harvests' },
-                { icon: 'verified_user', label: 'Compliance Audit', path: '/dashboard/audit/compliance' },
-                { icon: 'photo_camera', label: 'Field Evidence', path: '/dashboard/audit/field_events' },
-                { icon: 'monitoring', label: 'System Status', path: '/dashboard/audit/system' },
-                { icon: 'manage_accounts', label: 'User Management', path: '/dashboard/audit/users' },
+                { icon: 'dashboard', label: 'Overview', path: '/dashboard' },
+                { icon: 'groups', label: 'Farmer Directory', path: '/dashboard/farmers' },
+                { icon: 'map', label: 'Plot Map', path: '/dashboard/plots' },
+                { icon: 'agriculture', label: 'Harvest Registry', path: '/dashboard/harvests' },
+                { icon: 'verified_user', label: 'Compliance Audit', path: '/dashboard/compliance' },
+                { icon: 'photo_camera', label: 'Field Evidence', path: '/dashboard/field_events' },
+                { icon: 'monitoring', label: 'System Status', path: '/dashboard/system' },
+                { icon: 'manage_accounts', label: 'User Management', path: '/dashboard/users' },
             ];
         case 'CaseOfficer':
             return [
