@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import FulfillmentBar from '../components/FulfillmentBar';
 import { harvestApi, contractApi, analyticsApi } from '../lib/api';
+
+const topCooperatives = [
+    { name: 'Nyeri Farmers Coop', score: 98, status: 'Top Rated', last_fulfilled: '1,200kg' },
+    { name: 'Meru Central', score: 94, status: 'Premium', last_fulfilled: '850kg' },
+    { name: 'Kirinyaga Star', score: 91, status: 'Certified', last_fulfilled: '1,500kg' }
+];
 
 const OfftakerDashboard: React.FC = () => {
     const [batches, setBatches] = useState<any[]>([]);
