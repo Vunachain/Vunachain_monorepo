@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import EventLogForm from '../components/EventLogForm';
+import FarmerOnboardingForm from '../components/FarmerOnboardingForm';
+import FarmerProfileModal from '../components/FarmerProfileModal';
 import { farmerApi, plotApi, farmEventApi } from '../lib/api';
 import { Farmer, Plot, FarmEvent } from '../types';
 
