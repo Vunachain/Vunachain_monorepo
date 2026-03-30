@@ -206,7 +206,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Verified Harvests</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{harvests.filter((h: any) => h.status === 1 || h.status === 3).length}</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{harvests.length}</p>
                                         </div>
                                     </div>
                                 </div>

@@ -61,7 +61,7 @@ const OfftakerDashboard: React.FC = () => {
             });
             navigate('needs');
         } catch (error) {
-            alert('Failed to post need. Ensure all fields are valid.');
+            alert('Failed to create supply request. Ensure all fields are valid.');
         }
     };
 
@@ -138,7 +138,7 @@ const OfftakerDashboard: React.FC = () => {
                                         <span className="material-symbols-outlined text-[32px]">add_shopping_cart</span>
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-lg">Post New Need</h3>
+                                        <h3 className="font-bold text-lg">Create Supply Request</h3>
                                         <p className="text-xs text-white/80">Marketplace of verified cooperatives</p>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@ const OfftakerDashboard: React.FC = () => {
                                 className="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-bold transition-all shadow-sm shadow-primary/20 flex items-center gap-2"
                             >
                                 <span className="material-symbols-outlined text-[20px]">add</span>
-                                Post New Need
+                                Create Supply Request
                             </button>
                         </div>
 
@@ -358,7 +358,7 @@ const OfftakerDashboard: React.FC = () => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
                     <div className="bg-white dark:bg-gray-900 rounded-lg w-full max-w-lg shadow-2xl overflow-hidden animate-slide-up">
                         <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Post New Buyer Need</h3>
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Create Supply Request</h3>
                             <button onClick={() => setShowCreateModal(false)} className="material-symbols-outlined text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">close</button>
                         </div>
                         <form onSubmit={handleCreateContract} className="p-6 space-y-5">
@@ -459,7 +459,7 @@ const OfftakerDashboard: React.FC = () => {
                                 />
                             </div>
                             <button type="submit" className="w-full py-5 bg-primary hover:bg-primary-dark text-white rounded-lg font-black uppercase tracking-widest transition-all shadow-xl shadow-primary/20 transform active:scale-[0.98] mt-4">
-                                Publish Buyer Need
+                                Create Supply Request
                             </button>
                         </form>
                     </div>
