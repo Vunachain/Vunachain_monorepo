@@ -61,7 +61,7 @@ jobs:
           pytest --cov=. --cov-report=xml --cov-report=html -v
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v6
         with:
           files: ./apps/backend/coverage.xml
           flags: backend
@@ -113,7 +113,7 @@ jobs:
         run: pnpm -C apps/landing test:run --coverage
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v6
         with:
           flags: frontend
           fail_ci_if_error: false
