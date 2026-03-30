@@ -131,4 +131,8 @@ export const adminApi = {
     deactivateUser: (id: number) => api.delete<{ success: boolean }>(`/admin/users/${id}/`),
 };
 
+export const payoutApi = {
+    list: () => api.get('/payouts/'),
+};
+
 export default api;

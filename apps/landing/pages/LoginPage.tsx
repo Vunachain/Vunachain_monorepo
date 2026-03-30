@@ -5,6 +5,16 @@ import { setTokens, decodeToken, getRoleDashboardPath } from '../lib/auth';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 
+const DEV_CREDENTIALS = [
+    { role: 'System Admin',   username: 'admin',                  password: 'Vunachain2024!' },
+    { role: 'Coop Manager',   username: 'nyeri_admin',            password: 'Vunachain2024!' },
+    { role: 'Field Agent',    username: 'field_agent',            password: 'Vunachain2024!' },
+    { role: 'Agronomist',     username: 'agronomist',             password: 'Vunachain2024!' },
+    { role: 'Coffee Buyer',   username: 'coffee_intl_buyer',      password: 'Vunachain2024!' },
+    { role: 'Grains Offtaker',username: 'global_grains_offtaker', password: 'Vunachain2024!' },
+    { role: 'Auditor',        username: 'auditor',                password: 'Vunachain2024!' },
+];
+
 const LoginPage: React.FC = () => {
     const { isConnected, address } = useAccount();
     const [email, setEmail] = useState('');
@@ -12,6 +22,7 @@ const LoginPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [showDevCreds, setShowDevCreds] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -226,6 +237,40 @@ const LoginPage: React.FC = () => {
                     <p className="text-center text-sm text-gray-500 pt-2">
                         Forgotten credentials? Contact your system administrator.
                     </p>
+
+                    {import.meta.env.DEV && (
+                        <div className="mt-6 border border-amber-200 dark:border-amber-800/40 rounded-lg overflow-hidden">
+                            <button
+                                type="button"
+                                onClick={() => setShowDevCreds(!showDevCreds)}
+                                className="w-full flex items-center justify-between px-4 py-3 bg-amber-50 dark:bg-amber-900/10 text-amber-800 dark:text-amber-400 text-xs font-bold hover:bg-amber-100 dark:hover:bg-amber-900/20 transition-colors"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <span className="material-symbols-outlined text-[16px]">developer_mode</span>
+                                    Test Credentials (Dev Only)
+                                </span>
+                                <span className="material-symbols-outlined text-[16px]">{showDevCreds ? 'expand_less' : 'expand_more'}</span>
+                            </button>
+                            {showDevCreds && (
+                                <div className="divide-y divide-amber-100 dark:divide-amber-900/20">
+                                    {DEV_CREDENTIALS.map(cred => (
+                                        <button
+                                            key={cred.username}
+                                            type="button"
+                                            onClick={() => { setEmail(cred.username); setPassword(cred.password); }}
+                                            className="w-full flex items-center justify-between px-4 py-2.5 bg-white dark:bg-gray-900 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors text-left group"
+                                        >
+                                            <div>
+                                                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{cred.role}</p>
+                                                <p className="text-[11px] font-mono text-slate-400">{cred.username}</p>
+                                            </div>
+                                            <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity">Click to fill →</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
