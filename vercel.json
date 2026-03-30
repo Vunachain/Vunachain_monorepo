@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build:landing",
+  "installCommand": "npm install --include=dev && cd apps/landing && npm install --include=dev",
+  "outputDirectory": "apps/landing/dist",
+  "ignoreCommand": "git diff --quiet $VERCEL_GIT_PREV_SHA $VERCEL_GIT_COMMIT -- apps/landing || exit 0",
+  "nodeVersion": "20.x",
+  "env": {
+    "NODE_ENV": "production",
+    "CI": "true"
+  },
+  "framework": null
+}
