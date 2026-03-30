@@ -43,7 +43,7 @@ const LegalModal: React.FC<LegalModalProps> = ({ isOpen, onClose, title, type })
                     ) : (
                         <>
                             <p className="font-semibold text-gray-900 dark:text-white">Last Updated: February 2026</p>
-                            <p>By using the Vunachain platform, you agree to the following terms and conditions. These terms govern your access to and use of Vunachain's compliance and traceability services.</p>
+                            <p>By using the Vunachain platform, you agree to the following terms and conditions. These terms govern your access to and use of Vunachain&apos;s compliance and traceability services.</p>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-4">1. Service Description</h3>
                             <p>Vunachain provides a digital platform for monitoring EUDR compliance and reducing side-selling in agricultural supply chains. Verification is provided based on the data submitted by users and farmers.</p>
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-4">2. User Responsibilities</h3>

@@ -35,7 +35,7 @@ const DemoModal: React.FC<DemoModalProps> = ({ isOpen, onClose }) => {
           });
         });
         locationPoint = `POINT(${position.coords.longitude} ${position.coords.latitude})`;
-      } catch (err) {
+      } catch {
         console.warn("Geolocation denied or timed out. Proceeding without location.");
       }
     }

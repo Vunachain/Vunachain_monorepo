@@ -116,7 +116,7 @@ export const farmEventApi = {
 export const contractApi = {
     list: (params?: Record<string, string | number>) => api.get('/contracts/', { params }),
     get: (id: string) => api.get(`/contracts/${id}/`),
-    create: (data: any) => api.post('/contracts/', data),
+    create: (data: Record<string, unknown>) => api.post('/contracts/', data),
     accept: (id: string) => api.post<{ success: boolean }>(`/contracts/${id}/accept/`),
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { 
     Users, ShieldCheck, Shield, Globe, AlertTriangle, Download, 
     MapPin, Activity, RefreshCw, Loader2, Database, HardDrive, Clock
@@ -10,12 +10,16 @@ import { HealthMetricCard, UserTable } from '../components/AdminComponents';
 import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi, harvestApi } from '../lib/api';
 import { Farmer, Plot, FarmEvent, SystemHealth, AdminUser } from '../types';
 
+interface Harvest {
+    [key: string]: unknown;
+}
+
 const Dashboard: React.FC = () => {
     const [farmers, setFarmers] = useState<Farmer[]>([]);
     const [plots, setPlots] = useState<Plot[]>([]);
     const [summary, setSummary] = useState<{ total_plots: number, compliant_count: number, compliance_rate: number } | null>(null);
     const [farmEvents, setFarmEvents] = useState<FarmEvent[]>([]);
-    const [harvests, setHarvests] = useState<any[]>([]);
+    const [harvests, setHarvests] = useState<Harvest[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloadingCert, setDownloadingCert] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -42,16 +46,20 @@ const Dashboard: React.FC = () => {
                     farmEventApi.list(),
                     harvestApi.list()
                 ]);
-                setFarmers((farmersRes.data as any).results || farmersRes.data || []);
-                setPlots((plotsRes.data as any).results || plotsRes.data || []);
+                const farmersData = (farmersRes.data as Record<string, unknown>).results || farmersRes.data || [];
+                setFarmers(farmersData as Farmer[]);
+                const plotsData = (plotsRes.data as Record<string, unknown>).results || plotsRes.data || [];
+                setPlots(plotsData as Plot[]);
                 setSummary(summaryRes.data);
-                setFarmEvents((eventsRes.data as any).results || eventsRes.data || []);
-                setHarvests((harvestsRes.data as any).results || harvestsRes.data || []);
-            } catch (err: any) {
+                const eventsData = (eventsRes.data as Record<string, unknown>).results || eventsRes.data || [];
+                setFarmEvents(eventsData as FarmEvent[]);
+                const harvestsData = (harvestsRes.data as Record<string, unknown>).results || harvestsRes.data || [];
+                setHarvests(harvestsData as Harvest[]);
+            } catch (err: unknown) {
                 console.error('Error fetching dashboard data:', err);
                 // Type guard for Axios errors or similar
-                const error = err as any; 
-                if (error.response?.status === 401) {
+                const error = err as Record<string, unknown>;
+                if ((error.response as Record<string, unknown>)?.status === 401) {
                     setIsAuthenticated(false);
                     localStorage.removeItem('vunachain_token');
                 }
@@ -100,7 +108,7 @@ const Dashboard: React.FC = () => {
         try {
             await adminApi.updateUser(id, data);
             fetchUsers();
-        } catch (_err) {
+        } catch {
             alert('Failed to update user permissions.');
         }
     };
@@ -110,7 +118,7 @@ const Dashboard: React.FC = () => {
             try {
                 await adminApi.deactivateUser(id);
                 fetchUsers();
-            } catch (_err) {
+            } catch {
                 alert('Failed to deactivate user.');
             }
         }
@@ -237,7 +245,7 @@ const Dashboard: React.FC = () => {
                                     ].map((tab) => (
                                         <button
                                             key={tab.id}
-                                            onClick={() => setActiveOperationsTab(tab.id as any)}
+                                            onClick={() => setActiveOperationsTab(tab.id as 'farmers' | 'plots' | 'harvests' | 'events')}
                                             className={`px-4 py-3 font-semibold text-sm flex items-center gap-2 whitespace-nowrap border-b-2 transition-all ${
                                                 activeOperationsTab === tab.id
                                                     ? 'border-primary text-primary'
@@ -325,7 +333,7 @@ const Dashboard: React.FC = () => {
                                                     <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                                                         {harvests.length === 0 ? (
                                                             <tr><td colSpan={7} className="px-4 py-4 text-center text-slate-400 italic">No harvests indexed yet.</td></tr>
-                                                        ) : harvests.map((h: any) => {
+                                                        ) : harvests.map((h: Harvest) => {
                                                             const statusMap: Record<number, { label: string; color: string; icon: string }> = {
                                                                 0: { label: 'Pending', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', icon: 'hourglass_empty' },
                                                                 1: { label: 'Verified', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', icon: 'verified' },
@@ -382,7 +390,7 @@ const Dashboard: React.FC = () => {
                                                                 </div>
                                                                 <h4 className="font-bold text-lg text-slate-900 dark:text-white">{event.plot_name}</h4>
                                                                 <p className="text-sm text-slate-600 dark:text-slate-300">Farmer: {event.farmer_name}</p>
-                                                                {event.notes && <p className="text-sm text-slate-400 mt-2 italic">"{event.notes}"</p>}
+                                                                {event.notes && <p className="text-sm text-slate-400 mt-2 italic">{`"${event.notes}"`}</p>}
                                                             </div>
                                                             <div className="text-right ml-4">
                                                                 {event.quality_grade && (
@@ -472,7 +480,7 @@ const Dashboard: React.FC = () => {
                                         <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                                             {harvests.length === 0 ? (
                                                 <tr><td colSpan={7} className="px-6 py-12 text-center text-slate-400 italic">No harvests indexed yet.</td></tr>
-                                            ) : harvests.map((h: any) => {
+                                            ) : harvests.map((h: Harvest) => {
                                                 const statusMap: Record<number, { label: string; color: string; icon: string }> = {
                                                     0: { label: 'Pending', color: 'bg-amber-100 text-amber-700', icon: 'hourglass_empty' },
                                                     1: { label: 'Verified', color: 'bg-blue-100 text-blue-700', icon: 'verified' },
@@ -531,7 +539,7 @@ const Dashboard: React.FC = () => {
                                                         </div>
                                                         <h4 className="font-bold text-lg text-slate-900 dark:text-white">{event.plot_name}</h4>
                                                         <p className="text-sm text-slate-600 dark:text-slate-300">Farmer: {event.farmer_name}</p>
-                                                        {event.notes && <p className="text-sm text-slate-400 mt-2 italic">"{event.notes}"</p>}
+                                                        {event.notes && <p className="text-sm text-slate-400 mt-2 italic">{`"${event.notes}"`}</p>}
                                                     </div>
                                                     <div className="text-right">
                                                         {event.quality_grade && (

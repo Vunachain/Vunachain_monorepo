@@ -2,12 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import FulfillmentBar from '../components/FulfillmentBar';
 import { harvestApi, contractApi, analyticsApi } from '../lib/api';
-import { ContractPerformanceRadar, PerformanceBarChart } from '../components/DashboardCharts';
+import { ContractPerformanceRadar } from '../components/DashboardCharts';
 import { motion } from 'framer-motion';
 
+interface Batch {
+    [key: string]: unknown;
+}
+interface Contract {
+    [key: string]: unknown;
+}
+interface Metrics {
+    [key: string]: unknown;
+}
+
 const OfftakerDashboard: React.FC = () => {
-    const [batches, setBatches] = useState<any[]>([]);
-    const [contracts, setContracts] = useState<any[]>([]);
+    const [batches, setBatches] = useState<Batch[]>([]);
+    const [contracts, setContracts] = useState<Contract[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -23,7 +33,7 @@ const OfftakerDashboard: React.FC = () => {
         deadline: ''
     });
 
-    const [metrics, setMetrics] = useState<any>(null);
+    const [metrics, setMetrics] = useState<Metrics | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,9 +43,11 @@ const OfftakerDashboard: React.FC = () => {
                     contractApi.list(),
                     analyticsApi.getMetrics()
                 ]);
-                setBatches((hRes.data as any).results || hRes.data || []);
-                setContracts((cRes.data as any).results || cRes.data || []);
-                setMetrics(mRes.data);
+                const batchesData = (hRes.data as Record<string, unknown>).results || hRes.data || [];
+                setBatches(batchesData as Batch[]);
+                const contractsData = (cRes.data as Record<string, unknown>).results || cRes.data || [];
+                setContracts(contractsData as Contract[]);
+                setMetrics(mRes.data as Metrics);
             } catch (err) {
                 console.error('Error fetching Offtaker data:', err);
             } finally {
@@ -53,7 +65,8 @@ const OfftakerDashboard: React.FC = () => {
 
             await contractApi.create(submitData);
             const res = await contractApi.list();
-            setContracts((res.data as any).results || res.data || []);
+            const contractsData = (res.data as Record<string, unknown>).results || res.data || [];
+            setContracts(contractsData as Contract[]);
             setShowCreateModal(false);
             setNewContract({
                 commodity: 'Arabica Coffee',
@@ -66,7 +79,7 @@ const OfftakerDashboard: React.FC = () => {
                 deadline: ''
             });
             navigate('needs');
-        } catch (error) {
+        } catch {
             alert('Failed to create supply request. Ensure all fields are valid.');
         }
     };

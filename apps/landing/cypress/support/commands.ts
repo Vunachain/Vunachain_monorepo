@@ -1,9 +1,10 @@
 // cypress/support/commands.ts
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
-      login(role: string): Chainable<void>;
+      login(role: string): void;
     }
   }
 }

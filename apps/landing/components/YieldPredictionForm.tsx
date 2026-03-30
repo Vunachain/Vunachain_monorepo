@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Plot } from '../types';
 
+interface Prediction {
+    [key: string]: unknown;
+}
+
 interface YieldPredictionFormProps {
     plots: Plot[];
-    onPredictionGenerated: (prediction: any) => void;
+    onPredictionGenerated: (prediction: Prediction) => void;
 }
 
 const YieldPredictionForm: React.FC<YieldPredictionFormProps> = ({ plots, onPredictionGenerated }) => {

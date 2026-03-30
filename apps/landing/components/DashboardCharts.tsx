@@ -6,14 +6,17 @@ import {
     BarChart, Bar
 } from 'recharts';
 
+interface ChartData {
+    [key: string]: string | number | undefined;
+}
+
 interface ChartProps {
-    data: any[];
+    data: ChartData[];
     title?: string;
     height?: number;
 }
 
 const COLORS = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
-const GRADIENT_GREEN = ['#059669', '#34d399'];
 
 export const VolumeTimeAreaChart: React.FC<ChartProps> = ({ data, height = 300 }) => {
     // Format dates for X-axis if they are week-starting strings

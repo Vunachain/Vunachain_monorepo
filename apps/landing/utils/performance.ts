@@ -21,7 +21,7 @@ import { onLCP, onINP, onCLS, Metric } from 'web-vitals';
 // Extend Window interface for dataLayer and connection API
 declare global {
     interface Window {
-        dataLayer: any[];
+        dataLayer: Record<string, unknown>[];
     }
 
     interface Navigator {

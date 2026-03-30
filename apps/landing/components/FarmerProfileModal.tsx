@@ -10,7 +10,6 @@ interface FarmerProfileModalProps {
 const FarmerProfileModal: React.FC<FarmerProfileModalProps> = ({ farmer, events, onClose }) => {
     // Determine last visit
     const farmerEvents = events.filter(e => e.farmer_name === farmer.full_name || e.farmer === farmer.id);
-    const lastEvent = farmerEvents.length > 0 ? farmerEvents[0] : null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 h-screen overflow-y-auto animate-fade-in">
@@ -96,7 +95,7 @@ const FarmerProfileModal: React.FC<FarmerProfileModalProps> = ({ farmer, events,
                                             
                                             {event.notes && (
                                                 <p className="mt-3 text-sm text-slate-600 dark:text-slate-400 leading-relaxed bg-white dark:bg-gray-900 p-3 rounded-lg">
-                                                    "{event.notes}"
+                                                    &quot;{event.notes}&quot;
                                                 </p>
                                             )}
                                         </div>
