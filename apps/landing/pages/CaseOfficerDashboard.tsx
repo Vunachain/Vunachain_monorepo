@@ -1,10 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { contractApi, farmerApi, harvestApi } from '../lib/api';
+import { contractApi, farmerApi } from '../lib/api';
+
+interface Contract {
+    [key: string]: unknown;
+}
+interface Farmer {
+    [key: string]: unknown;
+}
 
 const CaseOfficerDashboard: React.FC = () => {
-    const [contracts, setContracts] = useState<any[]>([]);
-    const [farmers, setFarmers] = useState<any[]>([]);
+    const [contracts, setContracts] = useState<Contract[]>([]);
+    const [farmers, setFarmers] = useState<Farmer[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -14,8 +21,10 @@ const CaseOfficerDashboard: React.FC = () => {
                     contractApi.list(),
                     farmerApi.list()
                 ]);
-                setContracts((cRes.data as any).results || cRes.data || []);
-                setFarmers((fRes.data as any).results || fRes.data || []);
+                const contractsData = (cRes.data as Record<string, unknown>).results || cRes.data || [];
+                setContracts(contractsData as Contract[]);
+                const farmersData = (fRes.data as Record<string, unknown>).results || fRes.data || [];
+                setFarmers(farmersData as Farmer[]);
             } catch (err) {
                 console.error('Error fetching Case Officer data:', err);
             } finally {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../utils/api';
 import { trackROICalculatorInteraction } from '../utils/analytics';
-import Tooltip from './Tooltip';
 
 // Hook for smooth number transition
 const useSmoothNumber = (target: number) => {
@@ -60,7 +59,7 @@ const ROICalculator: React.FC<ROICalculatorProps> = ({ onOpenDemo }) => {
     }, 2000); // 2 second debounce
 
     return () => clearTimeout(timer);
-  }, [volume, credit, crop]);
+  }, [volume, credit, crop, rawRecoverable]);
 
   // Animated values
   const estimatedLoss = useSmoothNumber(rawEstimatedLoss);

@@ -2,8 +2,20 @@ import React, { useEffect, useState } from 'react';
 import Tooltip from './Tooltip';
 import { getLandingPageData } from '../lib/sanity';
 
+interface ProblemContent {
+  title?: string;
+  description?: string;
+  painPoints?: PainPoint[];
+}
+
+interface PainPoint {
+  title: string;
+  description: string;
+  icon: string;
+}
+
 const ProblemSection: React.FC = () => {
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<ProblemContent | null>(null);
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -39,7 +51,7 @@ const ProblemSection: React.FC = () => {
         </header>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {painPoints.map((point: any, idx: number) => (
+          {painPoints.map((point: PainPoint, idx: number) => (
             <article key={idx} className="group relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 ease-out hover:-translate-y-2 hover:border-red-200 hover:shadow-xl dark:border-white/10 dark:bg-[#1a231b] dark:hover:border-red-900/50">
               <Tooltip content={point.title}>
                 <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 group-hover:scale-110 transition-transform duration-300">

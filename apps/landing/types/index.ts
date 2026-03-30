@@ -4,7 +4,7 @@ export interface Farmer {
     full_name: string;
     phone_number: string;
     national_id?: string;
-    kyc_data: Record<string, any>;
+    kyc_data: Record<string, unknown>;
     credit_score: number;
     is_verified: boolean;
     created_at: string;

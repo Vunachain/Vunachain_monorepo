@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Tooltip from './Tooltip';
 import { api } from '../utils/api';
 import { trackFormFrictionStart, trackPilotRequestSuccess } from '../utils/analytics';
 import LegalModal from './LegalModal';
@@ -44,7 +43,7 @@ const Footer: React.FC = () => {
           </h2>
 
           <p className="mx-auto mb-10 max-w-2xl text-lg text-gray-400">
-            The 2026 planting season is approaching. Don't risk another cycle of leakage and regulatory uncertainty. Onboard your first 100 farmers in under 48 hours.
+            The 2026 planting season is approaching. Don&apos;t risk another cycle of leakage and regulatory uncertainty. Onboard your first 100 farmers in under 48 hours.
           </p>
 
           <div className="mx-auto max-w-lg">

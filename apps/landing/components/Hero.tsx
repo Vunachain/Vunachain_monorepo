@@ -2,10 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import Tooltip from './Tooltip';
 import { getLandingPageData } from '../lib/sanity';
 
+interface HeroContent {
+  [key: string]: unknown;
+}
+
 const Hero: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<HeroContent | null>(null);
   const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {

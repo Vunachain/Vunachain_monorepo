@@ -106,9 +106,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
         type: 'FeatureCollection',
         features: plots.slice(0, 3).map(p => ({
             type: 'Feature',
-            geometry: p.centroid || (p.boundary as any)?.coordinates?.[0]?.[0]?.[0] ? {
+            geometry: p.centroid || (p.boundary as Record<string, unknown>)?.coordinates?.[0]?.[0]?.[0] ? {
                 type: 'Point',
-                coordinates: p.centroid?.coordinates || (p.boundary as unknown as any).coordinates[0][0][0]
+                coordinates: p.centroid?.coordinates || (p.boundary as Record<string, unknown>).coordinates[0][0][0]
             } : { type: 'Point', coordinates: [37.9, 0.02] },
             properties: {
                 risk: 'High Pest Risk'
@@ -192,8 +192,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 {popupInfo && (
                     <Popup
                         anchor="top"
-                        longitude={popupInfo.centroid?.coordinates?.[0] || (popupInfo.boundary as any)?.coordinates?.[0]?.[0]?.[0] || 37.9062}
-                        latitude={popupInfo.centroid?.coordinates?.[1] || (popupInfo.boundary as any)?.coordinates?.[0]?.[0]?.[1] || 0.0236}
+                        longitude={popupInfo.centroid?.coordinates?.[0] || (popupInfo.boundary as Record<string, unknown>)?.coordinates?.[0]?.[0]?.[0] || 37.9062}
+                        latitude={popupInfo.centroid?.coordinates?.[1] || (popupInfo.boundary as Record<string, unknown>)?.coordinates?.[0]?.[0]?.[1] || 0.0236}
                         onClose={() => setPopupInfo(null)}
                         className="vunachain-map-popup"
                     >
