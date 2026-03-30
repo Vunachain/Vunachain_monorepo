@@ -43,13 +43,13 @@ class Command(BaseCommand):
         # 0.1 Cleanup
         self.stdout.write("Cleaning up existing data...")
         
-        nyeri_manager, _ = User.objects.get_or_create(username='nyeri_admin', defaults={'email': 'nyeri@vunachain.com'})
+        nyeri_manager, _ = User.objects.get_or_create(username='nyeri_admin', defaults={'email': 'manager@nyericoop.com'})
         nyeri_manager.set_password('Vunachain2024!')
         nyeri_manager.groups.add(coop_group)
         nyeri_manager.save()
         self.create_profile_and_settings(nyeri_manager, "Nyeri Cooperative Manager", "Agricultural lead with 15 years experience in the Central Highlands.")
         
-        elgon_manager, _ = User.objects.get_or_create(username='elgon_admin', defaults={'email': 'elgon@vunachain.com'})
+        elgon_manager, _ = User.objects.get_or_create(username='elgon_admin', defaults={'email': 'ops@elgoncoffee.com'})
         elgon_manager.set_password('Vunachain2024!')
         elgon_manager.groups.add(coop_group)
         elgon_manager.save()

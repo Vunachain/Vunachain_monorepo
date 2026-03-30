@@ -30,10 +30,9 @@ class CeloProvider:
             
         self.w3 = Web3(Web3.HTTPProvider(self.rpc_url))
         
-        if self.w3.is_connected():
-            logger.info(f"Connected to Celo {self.network} via {self.rpc_url}")
-        else:
-            logger.error(f"Failed to connect to Celo {self.network}")
+        # Connection check is now lazy/skipped at startup to avoid blocking Django initialization.
+        # It will be automatically checked when the first transaction or data fetch is attempted.
+        logger.debug(f"CeloProvider initialized for {self.network} via {self.rpc_url}")
 
         self._initialized = True
 
@@ -77,4 +76,18 @@ class CeloProvider:
         return self.w3.eth.wait_for_transaction_receipt(txn_hash)
 
 
-celo_provider = CeloProvider()
+# Lazy singleton to avoid any Web3 or HTTPProvider initialization at import time
+_celo_provider = None
+
+def get_celo_provider():
+    global _celo_provider
+    if _celo_provider is None:
+        _celo_provider = CeloProvider()
+    return _celo_provider
+
+# For backward compatibility with existing imports
+class CeloProviderProxy:
+    def __getattr__(self, name):
+        return getattr(get_celo_provider(), name)
+
+celo_provider = CeloProviderProxy()

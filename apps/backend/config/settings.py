@@ -14,29 +14,28 @@ from pathlib import Path
 import os
 import logging
 import dj_database_url
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
-# Load environment variables from .env file
 load_dotenv()
 
-# Initialize Sentry
+# Sentry initialization - Wrapped to prevent startup hangs in certain environments
 SENTRY_DSN = os.getenv('SENTRY_DSN')
-if SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration()],
-        traces_sample_rate=0.1,
-        send_default_pii=True
-    )
-
-logger.debug("DEBUG: Environment Keys: %s", sorted([k for k in os.environ.keys()]))
-logger.debug("DEBUG: DATABASE_URL is present: %s", 'DATABASE_URL' in os.environ)
-
+if SENTRY_DSN and os.getenv('ENABLE_SENTRY', 'False') == 'True':
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+            traces_sample_rate=0.1,
+            send_default_pii=True
+        )
+        logger.info("Sentry SDK initialized successfully.")
+    except Exception as e:
+        logger.warning(f"Sentry initialization skipped or failed: {e}")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,8 +45,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# CHANGED: Remove hard-coded insecure key and require SECRET_KEY in production
-# For development, generate a temporary key. In production, set via env var.
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 if not SECRET_KEY:
@@ -149,22 +146,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database Configuration
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-# Database Configuration
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 # Robust DATABASE_URL detection
-# Some platforms use different names or sometimes DATABASE_URL is empty
 DATABASE_URL = os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL') or os.getenv('PGURL')
 
 # Check if we are on Railway
 IS_RAILWAY = os.getenv('RAILWAY_ENVIRONMENT_NAME') is not None
-
-# Debug print to inspect DATABASE_URL safely
-if DATABASE_URL:
-    # Log ONLY the start to avoid leaking credentials
-    logger.debug("DATABASE_URL detected. Starts with: %s...", DATABASE_URL[:15])
-else:
-    logger.debug("DATABASE_URL is None or empty. (Checked: DATABASE_URL, POSTGRES_URL, PGURL)")
 
 try:
     if DATABASE_URL and len(DATABASE_URL.strip()) > 0:
@@ -179,26 +166,22 @@ try:
                 engine='django.contrib.gis.db.backends.postgis' if DATABASE_URL.startswith('postgres') else None
             )
         }
-        logger.debug("Configured DB Engine: %s", DATABASES['default']['ENGINE'])
     else:
         # If on Railway, this is a fatal error
         if IS_RAILWAY:
-            msg = "FATAL ERROR: DATABASE_URL is MISSING or EMPTY on Railway! Please link your Postgres service to your Backend service in the Railway dashboard."
+            msg = "FATAL ERROR: DATABASE_URL is MISSING or EMPTY on Railway!"
             print(msg)
-            # Fail fast to avoid cryptic errors later
             import sys
             sys.exit(1)
         
         raise ValueError("DATABASE_URL is not set")
 except Exception as e:
     if IS_RAILWAY:
-        # Re-raise or exit because we already handled the exit above for empty URL
-        # If it's a parse error, we should still exit.
         print(f"FATAL ERROR during DB Parse: {e}")
         import sys
         sys.exit(1)
         
-    print(f"CRITICAL: Database configuration failed: {e}. Falling back to ephemeral SQLite.")
+    logger.info(f"Using fallback ephemeral SQLite database: {e}")
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -259,7 +242,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS_ALLOW_ALL_ORIGINS is intentionally NOT set to True — use CORS_ALLOWED_ORIGINS whitelist below
+# CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     'https://vunachain.com',
     'https://www.vunachain.com',
@@ -272,7 +255,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.vercel\.app$",
 ]
 
-# Allow additional origins from environment variable (comma-separated)
+# Allow additional origins from environment variable
 _extra_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
 if _extra_origins:
     CORS_ALLOWED_ORIGINS.extend([origin.strip() for origin in _extra_origins.split(',') if origin.strip()])
@@ -281,15 +264,10 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_PREFLIGHT_MAX_AGE = 86400  # 1 day
 
 CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
+    'DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT',
 ]
 
-# Trusted origins for CSRF (required for POST requests in Django 4+)
+# Trusted origins for CSRF
 CSRF_TRUSTED_ORIGINS = [
     'https://vunachain.com',
     'https://www.vunachain.com',
@@ -298,20 +276,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
 ]
 
-# Allow CSRF to work with CORS for public APIs
-# CORS_REPLACE_HTTPS_REFERER = True  # Removed: Deprecated in django-cors-headers
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+    'accept', 'accept-encoding', 'authorization', 'content-type',
+    'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with',
 ]
-
 
 
 # Django REST Framework Configuration
@@ -322,14 +290,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
     ],
-    # Use JWT for authentication
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    # Throttling to prevent abuse
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
@@ -351,25 +317,16 @@ SIMPLE_JWT = {
 
 # Production Security Hardening
 if not DEBUG:
-    # 1. Force HTTPS
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-    # 2. Strict Transport Security (HSTS)
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-
-    # 3. Secure Cookies
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-
-    # 4. Browser Security Headers
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_BROWSER_XSS_FILTER = True  # Deprecated in modern browsers but useful legacy
+    SECURE_BROWSER_XSS_FILTER = True
     SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
-    
-    # 5. X-Frame-Options
     X_FRAME_OPTIONS = 'DENY'
 
 # Jazzmin Settings
@@ -377,7 +334,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "Vunachain Admin",
     "site_header": "Vunachain",
     "site_brand": "Vunachain Compliance",
-    "site_logo": None,  # Removed missing logo reference to fix 500 error
+    "site_logo": None,
     "login_logo": None,
     "login_logo_dark": None,
     "site_logo_classes": "img-circle",
@@ -391,7 +348,6 @@ JAZZMIN_SETTINGS = {
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"name": "Support", "url": "https://vunachain.com/support", "new_window": True},
         {"model": "auth.User"},
-        {"label": "Support", "url": "https://vunachain.com/support", "new_window": True},
     ],
     "show_sidebar": True,
     "navigation_expanded": True,
@@ -452,6 +408,3 @@ CELO_RPC_URL = os.getenv("CELO_RPC_URL", "https://forno.celo.org")
 CELO_WEBSOCKET_URL = os.getenv("CELO_WEBSOCKET_URL", "wss://forno.celo.org/ws")
 CELO_SEPOLIA_RPC_URL = os.getenv("CELO_SEPOLIA_RPC_URL", "https://forno.celo-sepolia.celo-testnet.org")
 CELO_SEPOLIA_WEBSOCKET_URL = os.getenv("CELO_SEPOLIA_WEBSOCKET_URL", "wss://forno.celo-sepolia.celo-testnet.org/ws")
-# Contract addresses should be added here after deployment
-
-

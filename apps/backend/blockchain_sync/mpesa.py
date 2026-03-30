@@ -77,4 +77,19 @@ class MpesaClient:
             payout_record.save()
             return {"success": False, "error": str(e)}
 
-mpesa_client = MpesaClient()
+# Lazy singleton pattern to avoid blocking Django startup
+_mpesa_client = None
+
+def get_mpesa_client():
+    global _mpesa_client
+    if _mpesa_client is None:
+        logger.debug("Initializing MpesaClient singleton...")
+        _mpesa_client = MpesaClient()
+    return _mpesa_client
+
+# For backward compatibility with existing imports
+class MpesaClientProxy:
+    def __getattr__(self, name):
+        return getattr(get_mpesa_client(), name)
+
+mpesa_client = MpesaClientProxy()
