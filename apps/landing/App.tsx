@@ -16,6 +16,7 @@ const AgronomistDashboard = React.lazy(() => import('./pages/AgronomistDashboard
 const OfftakerDashboard = React.lazy(() => import('./pages/OfftakerDashboard'));
 const CaseOfficerDashboard = React.lazy(() => import('./pages/CaseOfficerDashboard'));
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const ProfileSettingsPage = React.lazy(() => import('./pages/ProfileSettingsPage'));
 const DashboardLayout = React.lazy(() => import('./components/DashboardLayout'));
 import { initPerformanceMonitoring } from './utils/performance';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -109,6 +110,11 @@ const App: React.FC = () => {
                 <Route path="/dashboard/case/*" element={
                   <ProtectedRoute allowedRoles={['CaseOfficer']}>
                     <DashboardLayout><CaseOfficerDashboard /></DashboardLayout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute allowedRoles={['Admin', 'Staff', 'Auditor', 'User', 'CoopManager', 'FieldAgent', 'Agronomist', 'Offtaker', 'CaseOfficer']}>
+                    <DashboardLayout><ProfileSettingsPage /></DashboardLayout>
                   </ProtectedRoute>
                 } />
               </Route>

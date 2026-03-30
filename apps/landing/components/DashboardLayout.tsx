@@ -42,11 +42,8 @@ const getLinksForRole = (role: UserRole): NavLink[] => {
         case 'Staff':
             return [
                 { icon: 'dashboard', label: 'Overview', path: '/dashboard' },
-                { icon: 'groups', label: 'Farmer Directory', path: '/dashboard/farmers' },
-                { icon: 'map', label: 'Plot Map', path: '/dashboard/plots' },
-                { icon: 'agriculture', label: 'Harvest Registry', path: '/dashboard/harvests' },
+                { icon: 'hub', label: 'Operations Center', path: '/dashboard/operations' },
                 { icon: 'verified_user', label: 'Compliance Audit', path: '/dashboard/compliance' },
-                { icon: 'photo_camera', label: 'Field Evidence', path: '/dashboard/field_events' },
                 { icon: 'monitoring', label: 'System Status', path: '/dashboard/system' },
                 { icon: 'manage_accounts', label: 'User Management', path: '/dashboard/users' },
             ];
@@ -195,6 +192,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                 <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate">{username}</p>
                             </div>
                         )}
+                        <button
+                            onClick={() => navigate('/profile')}
+                            className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-primary/10 hover:text-primary dark:text-slate-400 dark:hover:bg-primary/20 dark:hover:text-primary transition-all duration-200"
+                        >
+                            <span className="material-symbols-outlined text-[22px] transition-transform duration-200">person</span>
+                            {!sidebarCollapsed && <span className="whitespace-nowrap">Profile & Settings</span>}
+                        </button>
                         <button
                             onClick={handleLogout}
                             className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-200"
