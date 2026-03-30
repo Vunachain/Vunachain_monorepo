@@ -1,0 +1,18 @@
+# Backend .dockerignore
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.env
+.env.local
+.venv
+venv
+env
+.git
+.gitignore
+.pytest_cache
+.coverage
+htmlcov
+logs
+*.log
+.DS_Store
