@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import Map, { Source, Layer, NavigationControl, FullscreenControl, ScaleControl, GeolocateControl, Popup, type FillLayer, type CircleLayer, type MapMouseEvent } from 'react-map-gl/mapbox';
+import Map, { Source, Layer, NavigationControl, FullscreenControl, ScaleControl, GeolocateControl, Popup, type MapMouseEvent } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { type FillLayer, type CircleLayer } from 'mapbox-gl';
 import { type FeatureCollection } from 'geojson';
 import { Plot } from '../types';
 
@@ -28,7 +29,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
             .filter(p => p.boundary)
             .map(p => ({
                 type: 'Feature',
-                geometry: p.boundary as any,
+                geometry: p.boundary,
                 properties: {
                     id: p.id,
                     name: p.name,
@@ -46,7 +47,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
             .filter(p => !p.boundary && p.centroid)
             .map(p => ({
                 type: 'Feature',
-                geometry: p.centroid as any,
+                geometry: p.centroid!,
                 properties: {
                     id: p.id,
                     name: p.name,
@@ -76,7 +77,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 : ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
             'fill-opacity': hasNdvi ? 0.7 : 0.5,
             'fill-outline-color': '#ffffff'
-        }
+        },
+        source: 'plots-source'
     };
 
     const pointLayerStyle: CircleLayer = {
@@ -96,7 +98,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 : ['case', ['get', 'is_compliant'], '#22c55e', '#ef4444'],
             'circle-stroke-width': 2,
             'circle-stroke-color': '#ffffff'
-        }
+        },
+        source: 'points-source'
     };
 
     const anomaliesData: FeatureCollection = useMemo(() => ({
@@ -105,7 +108,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
             type: 'Feature',
             geometry: p.centroid || (p.boundary as any)?.coordinates?.[0]?.[0]?.[0] ? {
                 type: 'Point',
-                coordinates: p.centroid?.coordinates || (p.boundary as any).coordinates[0][0][0]
+                coordinates: p.centroid?.coordinates || (p.boundary as unknown as any).coordinates[0][0][0]
             } : { type: 'Point', coordinates: [37.9, 0.02] },
             properties: {
                 risk: 'High Pest Risk'
@@ -135,7 +138,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 mapStyle={showSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/mapbox/streets-v12"}
                 onClick={(e: MapMouseEvent) => {
                     const feature = e.features?.[0];
-                    if (feature && (feature.layer.id === 'plot-boundaries' || feature.layer.id === 'plot-points')) {
+                    if (feature && feature.layer && (feature.layer.id === 'plot-boundaries' || feature.layer.id === 'plot-points')) {
                         const plotId = feature.properties?.id;
                         const plot = plots.find(p => p.id === plotId);
                         if (plot) {

@@ -10,7 +10,7 @@
 // Extend the Window interface to include dataLayer
 declare global {
     interface Window {
-        dataLayer: Record<string, unknown>[];
+        dataLayer: any[];
     }
 }
 
@@ -140,7 +140,7 @@ export function trackChecklistDownload(email: string): void {
 
     window.dataLayer.push(event);
 
-    console.log('[VunaStack Analytics] Checklist Download:', event);
+    console.log('[VunaStack Analytics] Checklist Download:', event, 'Email provided:', email ? 'Yes' : 'No');
 }
 
 /**

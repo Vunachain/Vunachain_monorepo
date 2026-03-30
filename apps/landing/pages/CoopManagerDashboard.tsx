@@ -33,12 +33,12 @@ const CoopManagerDashboard: React.FC = () => {
                 analyticsApi.getMetrics(),
                 harvestApi.list(),
             ]);
-            setFarmers(farmersRes.data.results || farmersRes.data || []);
-            setPlots(plotsRes.data.results || plotsRes.data || []);
+            setFarmers((farmersRes.data as any).results || farmersRes.data || []);
+            setPlots((plotsRes.data as any).results || plotsRes.data || []);
             setSummary(summaryRes.data);
-            setContracts(contractsRes.data.results || contractsRes.data || []);
+            setContracts((contractsRes.data as any).results || contractsRes.data || []);
             setMetrics(metricsRes.data.metrics);
-            setHarvests(harvestsRes.data.results || harvestsRes.data || []);
+            setHarvests((harvestsRes.data as any).results || harvestsRes.data || []);
         } catch (err) {
             console.error('Error fetching Coop Manager data:', err);
         } finally {
@@ -247,8 +247,7 @@ const CoopManagerDashboard: React.FC = () => {
                                     value: `$${totalPayoutsCusd.toFixed(2)}`,
                                     sub: `${paidHarvests.length} paid · ${pendingHarvests.length} pending`,
                                     color: 'purple'
-                                },
-                                },
+                                }
                             ].map((stat, i) => (
                                 <motion.div 
                                     key={i} 

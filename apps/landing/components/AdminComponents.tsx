@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
-    Activity, Database, Cpu, HardDrive, Clock, 
-    Shield, ShieldAlert, CheckCircle2, XCircle, 
+    CheckCircle2, XCircle, 
     UserCog, Trash2, Mail, Calendar
 } from 'lucide-react';
 
@@ -94,19 +93,11 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onUpdate, onDeactiv
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex flex-wrap gap-1.5">
-                                        {user.is_staff && (
-                                            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 text-[10px] font-black rounded-full uppercase">
-                                                Staff
-                                            </span>
-                                        )}
-                                        {user.roles.map(role => (
-                                            <span 
-                                                key={role} 
-                                                className={`px-2 py-0.5 text-[10px] font-black rounded-full uppercase ${getRoleBadgeColor(role, user.is_internal)}`}
-                                            >
-                                                {role}
-                                            </span>
-                                        ))}
+                                        <span 
+                                            className={`px-2 py-0.5 text-[10px] font-black rounded-full uppercase ${getRoleBadgeColor(user.primary_role, user.is_internal)}`}
+                                        >
+                                            {user.primary_role}
+                                        </span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">

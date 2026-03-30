@@ -33,8 +33,8 @@ const OfftakerDashboard: React.FC = () => {
                     contractApi.list(),
                     analyticsApi.getMetrics()
                 ]);
-                setBatches(hRes.data.results || hRes.data || []);
-                setContracts(cRes.data.results || cRes.data || []);
+                setBatches((hRes.data as any).results || hRes.data || []);
+                setContracts((cRes.data as any).results || cRes.data || []);
                 setMetrics(mRes.data);
             } catch (err) {
                 console.error('Error fetching Offtaker data:', err);
@@ -53,7 +53,7 @@ const OfftakerDashboard: React.FC = () => {
 
             await contractApi.create(submitData);
             const res = await contractApi.list();
-            setContracts(res.data.results || res.data || []);
+            setContracts((res.data as any).results || res.data || []);
             setShowCreateModal(false);
             setNewContract({
                 commodity: 'Arabica Coffee',

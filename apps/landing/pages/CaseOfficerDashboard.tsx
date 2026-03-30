@@ -14,8 +14,8 @@ const CaseOfficerDashboard: React.FC = () => {
                     contractApi.list(),
                     farmerApi.list()
                 ]);
-                setContracts(cRes.data.results || cRes.data || []);
-                setFarmers(fRes.data.results || fRes.data || []);
+                setContracts((cRes.data as any).results || cRes.data || []);
+                setFarmers((fRes.data as any).results || fRes.data || []);
             } catch (err) {
                 console.error('Error fetching Case Officer data:', err);
             } finally {

@@ -85,8 +85,8 @@ export const ComplianceDonutChart: React.FC<ChartProps> = ({ data, height = 300 
                         animationBegin={200}
                         animationDuration={1200}
                     >
-                        {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={4} />
+                        {data.map((_entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                     </Pie>
                     <Tooltip 

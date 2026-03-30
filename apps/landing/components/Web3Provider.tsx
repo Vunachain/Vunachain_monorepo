@@ -7,7 +7,7 @@ import {
     lightTheme
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { celo, celoAlfajores } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 import {
     QueryClientProvider,
     QueryClient,
@@ -22,7 +22,7 @@ const walletConnectProjectId =
 const config = getDefaultConfig({
     appName: 'Vunachain',
     projectId: walletConnectProjectId,
-    chains: [celo, celoAlfajores],
+    chains: [mainnet, sepolia],
     ssr: false,
 });
 

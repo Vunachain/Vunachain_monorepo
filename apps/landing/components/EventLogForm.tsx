@@ -62,7 +62,7 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
             const dataToSubmit = {
                 farmer: formData.farmer_id,
                 plot: formData.plot_id,
-                event_type: formData.event_type,
+                event_type: formData.event_type as any,
                 quality_grade: formData.quality_grade || null,
                 notes: formData.notes,
                 location: formData.location ? `SRID=4326;POINT(${formData.location.coordinates[0]} ${formData.location.coordinates[1]})` : null
@@ -70,7 +70,7 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
                 // here for the backend to process the expanded event metadata.
             };
 
-            await farmEventApi.create(dataToSubmit);
+            await farmEventApi.create(dataToSubmit as any);
             setResult({
                 success: true,
                 message: `Farm event logged successfully.`

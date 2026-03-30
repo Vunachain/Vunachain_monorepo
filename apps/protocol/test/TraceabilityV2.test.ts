@@ -2,7 +2,6 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { StandardMerkleTree } from "@openzeppelin/merkle-tree";
-import { TraceabilityV2 } from "../typechain-types"; // Assuming typechain is configured
 import { Contract } from "ethers";
 
 describe("TraceabilityV2", function () {
@@ -26,14 +25,10 @@ describe("TraceabilityV2", function () {
     // If ERC20Mock isn't available, we create a simple one inline or assume standard hardhat test setup
     try {
         mockToken = await MockToken.deploy("Celo Dollar", "cUSD", admin.address, ethers.parseEther("1000000"));
-    } catch (e) {
+    } catch {
         // Fallback: Deploy a simple mock if standard openzeppelin mocks aren't present
-        const SimpleERC20 = new ethers.ContractFactory(
-            require("@openzeppelin/contracts/build/contracts/ERC20.json").abi,
-            require("@openzeppelin/contracts/build/contracts/ERC20.json").bytecode,
-            admin
-        );
-        mockToken = await SimpleERC20.deploy("Celo Dollar", "cUSD");
+        const SimpleERC20 = await ethers.getContractFactory("ERC20Mock");
+        mockToken = await SimpleERC20.deploy("Celo Dollar", "cUSD", admin.address, ethers.parseEther("1000000"));
         // Minting some tokens might be tricky without a full mock, but let's assume we can fund it
     }
 

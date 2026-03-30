@@ -50,10 +50,10 @@ const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({ onSuccess }
             await plotApi.create({
                 farmer: farmerRes.data.id,
                 name: formData.plot_name,
-                area_hectares: formData.area_hectares,
+                area_hectares: parseFloat(formData.area_hectares) || 0,
                 crop_type: formData.crop,
                 location_centroid: `POINT(${formData.longitude} ${formData.latitude})`
-            });
+            } as any);
 
             alert('Farmer and Plot onboarded successfully!');
             onSuccess();

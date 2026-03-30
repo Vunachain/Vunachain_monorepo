@@ -25,6 +25,7 @@ export interface Plot {
         coordinates: [number, number];
     };
     area_hectares: number | null;
+    crop_type?: string;
     is_eudr_compliant: boolean;
     last_checked_at: string;
 }

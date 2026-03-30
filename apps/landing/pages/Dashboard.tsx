@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { 
     Users, ShieldCheck, Shield, Globe, AlertTriangle, Download, 
-    Loader, MapPin, Activity, Cpu, Database, HardDrive, 
-    Clock, RefreshCw, Loader2
+    MapPin, Activity, RefreshCw, Loader2, Database, HardDrive, Clock
 } from 'lucide-react';
 import MapComponent from '../components/MapComponent';
 import EventLogForm from '../components/EventLogForm';
 import { HealthMetricCard, UserTable } from '../components/AdminComponents';
 import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi, harvestApi } from '../lib/api';
-import { Farmer, Plot, FarmEvent } from '../types';
+import { Farmer, Plot, FarmEvent, SystemHealth, AdminUser } from '../types';
 
 const Dashboard: React.FC = () => {
     const [farmers, setFarmers] = useState<Farmer[]>([]);
@@ -28,7 +27,6 @@ const Dashboard: React.FC = () => {
     const [userCategory, setUserCategory] = useState<'internal' | 'external'>('internal');
     const [activeOperationsTab, setActiveOperationsTab] = useState<'farmers' | 'plots' | 'harvests' | 'events'>('farmers');
     
-    const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
@@ -44,11 +42,11 @@ const Dashboard: React.FC = () => {
                     farmEventApi.list(),
                     harvestApi.list()
                 ]);
-                setFarmers(farmersRes.data.results || farmersRes.data || []);
-                setPlots(plotsRes.data.results || plotsRes.data || []);
+                setFarmers((farmersRes.data as any).results || farmersRes.data || []);
+                setPlots((plotsRes.data as any).results || plotsRes.data || []);
                 setSummary(summaryRes.data);
-                setFarmEvents(eventsRes.data.results || eventsRes.data || []);
-                setHarvests(harvestsRes.data.results || harvestsRes.data || []);
+                setFarmEvents((eventsRes.data as any).results || eventsRes.data || []);
+                setHarvests((harvestsRes.data as any).results || harvestsRes.data || []);
             } catch (err: any) {
                 console.error('Error fetching dashboard data:', err);
                 // Type guard for Axios errors or similar
@@ -102,7 +100,7 @@ const Dashboard: React.FC = () => {
         try {
             await adminApi.updateUser(id, data);
             fetchUsers();
-        } catch (err) {
+        } catch (_err) {
             alert('Failed to update user permissions.');
         }
     };
@@ -112,7 +110,7 @@ const Dashboard: React.FC = () => {
             try {
                 await adminApi.deactivateUser(id);
                 fetchUsers();
-            } catch (err) {
+            } catch (_err) {
                 alert('Failed to deactivate user.');
             }
         }
@@ -157,7 +155,7 @@ const Dashboard: React.FC = () => {
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white">Vunachain Dashboard</h1>
                     <p className="text-slate-500 mt-1 font-medium">
-                        {isAuthenticated ? 'Authorized Auditor Access' : 'Public "Passport" View (Restricted)'}
+                        {isAuthenticated ? 'Authorized Auditor Access' : 'Public &quot;Passport&quot; View (Restricted)'}
                     </p>
                 </div>
                 {isAuthenticated ? (

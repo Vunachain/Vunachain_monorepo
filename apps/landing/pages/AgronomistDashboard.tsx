@@ -23,8 +23,8 @@ const AgronomistDashboard: React.FC = () => {
                 farmEventApi.list(),
                 complianceApi.getSummary()
             ]);
-            setPlots(plotsRes.data.results || plotsRes.data || []);
-            setFarmEvents(eventsRes.data.results || eventsRes.data || []);
+            setPlots((plotsRes.data as any).results || plotsRes.data || []);
+            setFarmEvents((eventsRes.data as any).results || eventsRes.data || []);
             setSummary(summaryRes.data);
         } catch (err) {
             console.error('Error fetching Agronomist data:', err);
