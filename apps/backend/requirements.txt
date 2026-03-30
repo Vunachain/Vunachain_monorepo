@@ -10,7 +10,7 @@ whitenoise==6.6.0
 psycopg2-binary>=2.9.1
 django-jazzmin==2.6.0
 # Geospatial dependencies
-Shapely==2.0.3
+Shapely==2.1.2
 geopy==2.4.1
 djangorestframework-gis==1.0
 # Blockchain dependencies
