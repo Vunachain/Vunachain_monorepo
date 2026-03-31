@@ -24,5 +24,8 @@
     "overrides": {
       "semver": "7.5.3"
     }
+  },
+  "dependencies": {
+    "path-exists": "^5.0.0"
   }
 }
