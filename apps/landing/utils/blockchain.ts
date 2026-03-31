@@ -9,9 +9,6 @@ export const USDC_ADDRESS: Address = '0x6f14C02d3c0EeD86e1f5d8bE8d1eEfD3E4f6e4e7
  * Uses standard Ethereum transaction parameters.
  */
 export const getSepoliaOverrides = () => {
-    interface Window {
-        dataLayer: Record<string, unknown>[];
-    }
     return {
         // Standard Sepolia transaction configuration
         // Adjust gas limits as needed for your contract

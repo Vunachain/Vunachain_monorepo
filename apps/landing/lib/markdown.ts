@@ -22,7 +22,7 @@ export function portableTextToMarkdown(blocks: PortableTextBlock[]): string {
   if (!blocks) return '';
 
   return blocks
-    .map((block, index) => {
+    .map((block) => {
       if (block._type === 'block') {
         const text = block.children
           ?.map((child) => {

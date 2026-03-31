@@ -78,7 +78,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const contextLabel = (() => {
         if (role === 'CoopManager') {
             // Attempt to use the cooperative name from the JWT or fall back to username
-            const coopName = (tokenPayload as any)?.cooperative_name || (tokenPayload as any)?.organization || null;
+            const tokenData = tokenPayload as Record<string, unknown>;
+            const coopName = tokenData?.cooperative_name || tokenData?.organization || null;
             return coopName ? coopName : `${username}'s Cooperative`;
         }
         return role.replace(/([A-Z])/g, ' $1').trim();

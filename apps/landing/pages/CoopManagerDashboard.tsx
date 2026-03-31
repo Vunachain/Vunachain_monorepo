@@ -8,19 +8,31 @@ import { farmerApi, plotApi, complianceApi, contractApi, analyticsApi, harvestAp
 import { Farmer, Plot } from '../types';
 import FarmerOnboardingWizard from '../components/FarmerOnboardingWizard';
 import { VolumeTimeAreaChart, ComplianceDonutChart } from '../components/DashboardCharts';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+
+interface Contract {
+    [key: string]: unknown;
+}
+interface Harvest {
+    [key: string]: unknown;
+}
+interface Metrics {
+    [key: string]: unknown;
+}
 
 const CoopManagerDashboard: React.FC = () => {
     const [farmers, setFarmers] = useState<Farmer[]>([]);
     const [plots, setPlots] = useState<Plot[]>([]);
-    const [contracts, setContracts] = useState<any[]>([]);
-    const [harvests, setHarvests] = useState<any[]>([]);
+    const navigate = useNavigate();
+
+    const [contracts, setContracts] = useState<Contract[]>([]);
+    const [harvests, setHarvests] = useState<Harvest[]>([]);
     const [summary, setSummary] = useState<{ total_plots: number, compliant_count: number, compliance_rate: number } | null>(null);
-    const [metrics, setMetrics] = useState<any>(null);
+    const [metrics, setMetrics] = useState<Metrics | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [showWizard, setShowWizard] = useState(false);
-    const [selectedContract, setSelectedContract] = useState<any>(null);
+    const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
     const navigate = useNavigate();
 
     const fetchData = async () => {
@@ -33,12 +45,16 @@ const CoopManagerDashboard: React.FC = () => {
                 analyticsApi.getMetrics(),
                 harvestApi.list(),
             ]);
-            setFarmers((farmersRes.data as any).results || farmersRes.data || []);
-            setPlots((plotsRes.data as any).results || plotsRes.data || []);
+            const farmersData = (farmersRes.data as Record<string, unknown>).results || farmersRes.data || [];
+            setFarmers(farmersData as Farmer[]);
+            const plotsData = (plotsRes.data as Record<string, unknown>).results || plotsRes.data || [];
+            setPlots(plotsData as Plot[]);
             setSummary(summaryRes.data);
-            setContracts((contractsRes.data as any).results || contractsRes.data || []);
-            setMetrics(metricsRes.data.metrics);
-            setHarvests((harvestsRes.data as any).results || harvestsRes.data || []);
+            const contractsData = (contractsRes.data as Record<string, unknown>).results || contractsRes.data || [];
+            setContracts(contractsData as Contract[]);
+            setMetrics(metricsRes.data.metrics as Metrics);
+            const harvestsData = (harvestsRes.data as Record<string, unknown>).results || harvestsRes.data || [];
+            setHarvests(harvestsData as Harvest[]);
         } catch (err) {
             console.error('Error fetching Coop Manager data:', err);
         } finally {
@@ -54,7 +70,7 @@ const CoopManagerDashboard: React.FC = () => {
         try {
             await contractApi.accept(id);
             fetchData();
-        } catch (error) {
+        } catch {
             alert('Failed to accept contract.');
         }
     };
@@ -394,7 +410,7 @@ const CoopManagerDashboard: React.FC = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                            {harvests.map((harvest: any) => (
+                                            {harvests.map((harvest: Harvest) => (
                                                 <tr key={harvest.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                                     <td className="px-4 py-3 font-mono text-xs text-slate-400">
                                                         #{String(harvest.id).slice(0, 8)}
@@ -492,7 +508,7 @@ const CoopManagerDashboard: React.FC = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                            {harvests.map((harvest: any) => {
+                                            {harvests.map((harvest: Harvest) => {
                                                 const cusd = parseFloat(harvest.payout_amount_cusd || 0);
                                                 const kes = (cusd * 130).toFixed(0);
                                                 return (
@@ -565,7 +581,7 @@ const CoopManagerDashboard: React.FC = () => {
                                                 </div>
                                             </div>
                                             <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg mb-6">
-                                                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">"{contract.quality_specs}"</p>
+                                                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">{`"${contract.quality_specs}"`}</p>
                                             </div>
                                             <button
                                                 onClick={() => setSelectedContract(contract)}

@@ -16,7 +16,7 @@ const DEV_CREDENTIALS = [
 ];
 
 const LoginPage: React.FC = () => {
-    const { isConnected, address } = useAccount();
+    useAccount();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -37,8 +37,10 @@ const LoginPage: React.FC = () => {
             const payload = decodeToken();
             const role = payload?.primary_role ?? 'User';
             navigate(getRoleDashboardPath(role));
-        } catch (err: any) {
-            setError(err.response?.data?.detail || 'Invalid credentials. Please try again.');
+        } catch (err: unknown) {
+            const error = err as Record<string, unknown>;
+            const errorDetail = (error.response as Record<string, unknown>)?.data as Record<string, unknown>;
+            setError((errorDetail?.detail as string) || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -169,7 +171,6 @@ const LoginPage: React.FC = () => {
                                     account,
                                     chain,
                                     openAccountModal,
-                                    openChainModal,
                                     openConnectModal,
                                     mounted,
                                 }) => {

@@ -59,10 +59,10 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
         setResult(null);
 
         try {
-            const dataToSubmit = {
+            const dataToSubmit: Record<string, unknown> = {
                 farmer: formData.farmer_id,
                 plot: formData.plot_id,
-                event_type: formData.event_type as any,
+                event_type: formData.event_type,
                 quality_grade: formData.quality_grade || null,
                 notes: formData.notes,
                 location: formData.location ? `SRID=4326;POINT(${formData.location.coordinates[0]} ${formData.location.coordinates[1]})` : null
@@ -70,13 +70,13 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
                 // here for the backend to process the expanded event metadata.
             };
 
-            await farmEventApi.create(dataToSubmit as any);
+            await farmEventApi.create(dataToSubmit);
             setResult({
                 success: true,
                 message: `Farm event logged successfully.`
             });
             if (onSuccess) onSuccess();
-            
+
             setFormData({
                 ...formData,
                 event_type: 'INSPECTION',
@@ -88,10 +88,11 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
                 photo_url: ''
             });
         } catch (err: unknown) {
-            const error = err as any;
+            const error = err as Record<string, unknown>;
+            const errorMsg = (error?.response as Record<string, unknown>)?.data;
             setResult({
                 success: false,
-                message: error.response?.data?.error || 'Failed to log event.'
+                message: (errorMsg as Record<string, unknown>)?.error || 'Failed to log event.'
             });
         } finally {
             setLoading(false);

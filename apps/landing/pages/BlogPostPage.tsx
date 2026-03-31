@@ -5,9 +5,13 @@ import { markdownToHtml } from '../lib/markdown';
 import SEO from '../components/SEO';
 import { generateArticleSchema } from '../lib/schema';
 
+interface BlogPost {
+    [key: string]: unknown;
+}
+
 const BlogPostPage: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
-    const [post, setPost] = useState<any>(null);
+    const [post, setPost] = useState<BlogPost | null>(null);
     const [loading, setLoading] = useState(true);
 
     const articleSchema = post ? generateArticleSchema({

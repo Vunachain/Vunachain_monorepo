@@ -4,8 +4,12 @@ import { motion } from 'framer-motion';
 import SEO from '../components/SEO';
 import { generateBreadcrumbSchema } from '../lib/schema';
 
+interface BlogPost {
+    [key: string]: unknown;
+}
+
 const BlogPage: React.FC = () => {
-    const [posts, setPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
 
     const breadcrumbs = generateBreadcrumbSchema([

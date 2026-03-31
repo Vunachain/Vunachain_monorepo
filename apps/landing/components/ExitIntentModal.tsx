@@ -25,10 +25,6 @@ const ExitIntentModal: React.FC = () => {
       }
     };
 
-    const handleWindowFocus = () => {
-      // Potential secondary trigger logic if focus is lost then regained
-    };
-
     document.addEventListener('mouseleave', handleMouseLeave);
     return () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
@@ -82,7 +78,7 @@ const ExitIntentModal: React.FC = () => {
           </h2>
 
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            At least protect yourself from the regulators. Download our free <strong>"2026 EUDR Compliance Checklist for Kenyan Exporters."</strong>
+            At least protect yourself from the regulators. Download our free <strong>&quot;2026 EUDR Compliance Checklist for Kenyan Exporters.&quot;</strong>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -128,7 +124,7 @@ const ExitIntentModal: React.FC = () => {
             onClick={() => setIsVisible(false)}
             className="mt-4 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 underline"
           >
-            No thanks, I'll risk it.
+            No thanks, I&apos;ll risk it.
           </button>
         </div>
       </div>

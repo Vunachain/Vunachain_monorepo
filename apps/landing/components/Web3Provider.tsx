@@ -1,9 +1,8 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
     getDefaultConfig,
     RainbowKitProvider,
-    darkTheme,
     lightTheme
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
@@ -29,7 +28,7 @@ const config = getDefaultConfig({
 const queryClient = new QueryClient();
 
 interface Web3ProviderProps {
-    children: any;
+    children: React.ReactNode;
 }
 
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {

@@ -28,6 +28,7 @@ export default [
       "typechain-types/",
       "test/**",
       "scripts/**",
+      "hardhat.config.cjs",
     ],
   },
 ];

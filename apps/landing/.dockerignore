@@ -1,0 +1,17 @@
+# Frontend .dockerignore
+node_modules
+npm-debug.log
+.git
+.gitignore
+dist
+build
+.env
+.env.local
+.env.*.local
+*.log
+.turbo
+.next
+coverage
+__tests__
+cypress
+.DS_Store

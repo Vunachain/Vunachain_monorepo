@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { 
-    CheckCircle2, XCircle, 
+import React from 'react';
+import {
+    CheckCircle2, XCircle,
     UserCog, Trash2, Mail, Calendar
 } from 'lucide-react';
 

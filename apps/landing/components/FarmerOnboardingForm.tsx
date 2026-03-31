@@ -28,7 +28,7 @@ const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({ onSuccess }
                     latitude: position.coords.latitude.toString(),
                     longitude: position.coords.longitude.toString()
                 });
-            }, (error) => {
+            }, () => {
                 alert('Position capture failed. Please enable location services.');
             });
         }
@@ -53,7 +53,7 @@ const FarmerOnboardingForm: React.FC<FarmerOnboardingFormProps> = ({ onSuccess }
                 area_hectares: parseFloat(formData.area_hectares) || 0,
                 crop_type: formData.crop,
                 location_centroid: `POINT(${formData.longitude} ${formData.latitude})`
-            } as any);
+            });
 
             alert('Farmer and Plot onboarded successfully!');
             onSuccess();

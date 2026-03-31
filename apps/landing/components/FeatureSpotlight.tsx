@@ -33,7 +33,7 @@ const FeatureSpotlight: React.FC = () => {
 
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Turn "Hope" into "Enforcement."
+            Turn &quot;Hope&quot; into &quot;Enforcement.&quot;
           </h2>
           <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
             We replace fallible human promises with infallible code and sensors.
@@ -52,7 +52,7 @@ const FeatureSpotlight: React.FC = () => {
               </Tooltip>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">We see what brokers hope you miss.</h3>
               <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
-                Our 10m-resolution satellite embeddings create a "Digital Twin" of every contracted plot. We verify planting, monitor crop health, and prove non-deforestation status from orbit. No ground visit required.
+                Our 10m-resolution satellite embeddings create a &quot;Digital Twin&quot; of every contracted plot. We verify planting, monitor crop health, and prove non-deforestation status from orbit. No ground visit required.
               </p>
             </div>
 
@@ -93,7 +93,7 @@ const FeatureSpotlight: React.FC = () => {
               </Tooltip>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Financial Security, Guaranteed by Code.</h3>
               <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
-                Vunachain's smart contracts automate trust between cooperatives and farmers. By settling input credits directly at the point of delivery, we ensure transparent, instant payouts and reliable debt recovery without manual friction.
+                Vunachain&apos;s smart contracts automate trust between cooperatives and farmers. By settling input credits directly at the point of delivery, we ensure transparent, instant payouts and reliable debt recovery without manual friction.
               </p>
             </div>
 
