@@ -118,16 +118,29 @@ def health_check(request):
 
 
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def get_content_markdown(request, slug):
     """
     Fetches raw Markdown content for a Sanity post.
     Ported from Next.js route for LLM compatibility.
     
-    GET /api/content/<slug>/
+    GET /api/content/<slug>/?token=<LLM_CONTENT_TOKEN>
     """
+    import os
     from django.http import HttpResponse
     from .sanity import fetch_sanity_content
     
+    # 1. Security Check: Token-based access
+    expected_token = os.getenv('LLM_CONTENT_TOKEN')
+    provided_token = request.query_params.get('token')
+    
+    if expected_token and provided_token != expected_token:
+        return Response(
+            {'error': 'Unauthorized: Valid LLM_CONTENT_TOKEN required'}, 
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    
+    # 2. Fetch Content
     content = fetch_sanity_content(slug)
     
     if not content:

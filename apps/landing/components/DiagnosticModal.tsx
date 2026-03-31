@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 
+interface PlotData {
+    name: string;
+    farmer: string;
+    [key: string]: unknown;
+}
+
 interface DiagnosticModalProps {
-    plot: any;
+    plot: PlotData;
     onClose: () => void;
 }
 

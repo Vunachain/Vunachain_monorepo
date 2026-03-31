@@ -195,5 +195,19 @@ class MetaTransactionRelayer:
         return self.provider.get_contract(address, get_traceability_v2_abi())
 
 
-# Singleton instance
-meta_relayer = MetaTransactionRelayer()
+# Lazy singleton pattern to avoid blocking Django startup
+_meta_relayer = None
+
+def get_meta_relayer():
+    global _meta_relayer
+    if _meta_relayer is None:
+        logger.debug("Initializing MetaTransactionRelayer singleton...")
+        _meta_relayer = MetaTransactionRelayer()
+    return _meta_relayer
+
+# For backward compatibility with existing imports
+class MetaRelayerProxy:
+    def __getattr__(self, name):
+        return getattr(get_meta_relayer(), name)
+
+meta_relayer = MetaRelayerProxy()

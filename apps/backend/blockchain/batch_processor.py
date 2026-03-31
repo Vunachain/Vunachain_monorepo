@@ -291,5 +291,19 @@ class PayoutBatchProcessor:
         return self.provider.get_contract(address, get_traceability_v2_abi())
 
 
-# Singleton instance
-batch_processor = PayoutBatchProcessor()
+# Lazy singleton pattern to avoid blocking Django startup
+_batch_processor = None
+
+def get_batch_processor():
+    global _batch_processor
+    if _batch_processor is None:
+        logger.debug("Initializing PayoutBatchProcessor singleton...")
+        _batch_processor = PayoutBatchProcessor()
+    return _batch_processor
+
+# For backward compatibility with existing imports
+class BatchProcessorProxy:
+    def __getattr__(self, name):
+        return getattr(get_batch_processor(), name)
+
+batch_processor = BatchProcessorProxy()

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { clearTokens, getUserName, getUserRole, UserRole } from '../lib/auth';
+import { clearTokens, getUserName, getUserRole, decodeToken, UserRole } from '../lib/auth';
 
 interface NavLink {
     icon: string;
@@ -35,18 +35,15 @@ const getLinksForRole = (role: UserRole): NavLink[] => {
         case 'Offtaker':
             return [
                 { icon: 'verified_user', label: 'Compliance Portal', path: '/dashboard/offtaker' },
-                { icon: 'add_shopping_cart', label: 'Post Buyer Need', path: '/dashboard/offtaker/needs' },
+                { icon: 'add_shopping_cart', label: 'Supply Requests', path: '/dashboard/offtaker/needs' },
                 { icon: 'inventory_2', label: 'Purchase History', path: '/dashboard/offtaker/history' },
             ];
         case 'Auditor':
         case 'Staff':
             return [
                 { icon: 'dashboard', label: 'Overview', path: '/dashboard' },
-                { icon: 'groups', label: 'Farmer Directory', path: '/dashboard/farmers' },
-                { icon: 'map', label: 'Plot Map', path: '/dashboard/plots' },
-                { icon: 'agriculture', label: 'Harvest Registry', path: '/dashboard/harvests' },
+                { icon: 'hub', label: 'Operations Center', path: '/dashboard/operations' },
                 { icon: 'verified_user', label: 'Compliance Audit', path: '/dashboard/compliance' },
-                { icon: 'photo_camera', label: 'Field Evidence', path: '/dashboard/field_events' },
                 { icon: 'monitoring', label: 'System Status', path: '/dashboard/system' },
                 { icon: 'manage_accounts', label: 'User Management', path: '/dashboard/users' },
             ];
@@ -73,8 +70,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     const location = useLocation();
     const role = getUserRole();
     const username = getUserName();
+    const tokenPayload = decodeToken();
     const links = getLinksForRole(role);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+    // Derive a friendly context label for the sidebar footer
+    const contextLabel = (() => {
+        if (role === 'CoopManager') {
+            // Attempt to use the cooperative name from the JWT or fall back to username
+            const tokenData = tokenPayload as any;
+            const coopName = tokenData?.cooperative_name || tokenData?.organization || null;
+            return coopName ? coopName : `${username}'s Cooperative`;
+        }
+        return role.replace(/([A-Z])/g, ' $1').trim();
+    })();
 
     const handleLogout = () => {
         clearTokens();
@@ -170,11 +179,27 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                                     {!sidebarCollapsed && (
                                         <span className="whitespace-nowrap flex-1 text-left">{link.label}</span>
                                     )}
+                                    {isActive(link) && !sidebarCollapsed && (
+                                        <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                                    )}
                                 </button>
                             ))}
                         </div>
                     </div>
-                    <div className="p-4 border-t border-gray-100 dark:border-gray-800">
+                    <div className="p-4 border-t border-gray-100 dark:border-gray-800 space-y-2">
+                        {!sidebarCollapsed && (
+                            <div className="px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 mb-2">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider truncate">{contextLabel}</p>
+                                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 truncate">{username}</p>
+                            </div>
+                        )}
+                        <button
+                            onClick={() => navigate('/profile')}
+                            className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-primary/10 hover:text-primary dark:text-slate-400 dark:hover:bg-primary/20 dark:hover:text-primary transition-all duration-200"
+                        >
+                            <span className="material-symbols-outlined text-[22px] transition-transform duration-200">person</span>
+                            {!sidebarCollapsed && <span className="whitespace-nowrap">Profile & Settings</span>}
+                        </button>
                         <button
                             onClick={handleLogout}
                             className="w-full group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all duration-200"

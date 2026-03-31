@@ -1,27 +1,27 @@
 import { type Address } from 'viem';
 
-// cUSD Token Address on Celo Alfajores
-export const cUSD_ADDRESS: Address = '0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1';
+// USDC Token Address on Ethereum Sepolia Testnet
+// Address: 0x6f14C02d3c0EeD86e1f5d8bE8d1eEfD3E4f6e4e7 (example, should be verified)
+export const USDC_ADDRESS: Address = '0x6f14C02d3c0EeD86e1f5d8bE8d1eEfD3E4f6e4e7';
 
 /**
- * Provides transaction overrides for Celo MiniPay.
- * Ensures gas is paid in cUSD if the user is in a MiniPay environment.
+ * Provides transaction overrides for Sepolia testnet.
+ * Uses standard Ethereum transaction parameters.
  */
-export const getCeloOverrides = (isMiniPay: boolean) => {
-    if (isMiniPay) {
-        return {
-            feeCurrency: cUSD_ADDRESS,
-        };
-    }
-    return {};
+export const getSepoliaOverrides = () => {
+    return {
+        // Standard Sepolia transaction configuration
+        // Adjust gas limits as needed for your contract
+    };
 };
 
 /**
  * Example function to structure a blockchain transaction call
  */
-export const structureTransaction = (config: any, isMiniPay: boolean) => {
+export const structureTransaction = (config: Record<string, unknown>) => {
     return {
         ...config,
-        overrides: getCeloOverrides(isMiniPay),
+        // Standard Ethereum transaction parameters
+        // Add overrides as needed for gas configuration
     };
 };

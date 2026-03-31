@@ -140,7 +140,7 @@ export function trackChecklistDownload(email: string): void {
 
     window.dataLayer.push(event);
 
-    console.log('[VunaStack Analytics] Checklist Download:', event);
+    console.log('[VunaStack Analytics] Checklist Download:', event, 'Email provided:', email ? 'Yes' : 'No');
 }
 
 /**
@@ -150,7 +150,7 @@ export function trackChecklistDownload(email: string): void {
  * @param eventName - Name of the custom event
  * @param eventData - Additional data to include with the event
  */
-export function trackCustomEvent(eventName: string, eventData: Record<string, any> = {}): void {
+export function trackCustomEvent(eventName: string, eventData: Record<string, unknown> = {}): void {
     const event = {
         event: eventName,
         ...eventData,

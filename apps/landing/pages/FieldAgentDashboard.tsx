@@ -30,7 +30,7 @@ const FieldAgentDashboard: React.FC = () => {
                 setFarmers(farmersRes.data);
                 setPlots(plotsRes.data);
                 setActiveEvents(eventsRes.data);
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Error fetching Field Agent data:', err);
             } finally {
                 setLoading(false);

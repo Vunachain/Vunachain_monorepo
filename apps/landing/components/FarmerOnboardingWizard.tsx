@@ -36,7 +36,7 @@ const FarmerOnboardingWizard: React.FC<{ onSuccess: () => void, onCancel: () => 
                     ]]
                 };
                 setFormData({ ...formData, boundary: JSON.stringify(polygon, null, 2) });
-            }, (err) => {
+            }, () => {
                 setError('Failed to get location. Please allow location access or paste GeoJSON manually.');
             });
         }
@@ -73,9 +73,12 @@ const FarmerOnboardingWizard: React.FC<{ onSuccess: () => void, onCancel: () => 
             }
 
             onSuccess();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Onboarding failed:', err);
-            setError(err.response?.data?.error || err.response?.data?.celo_address?.[0] || 'Failed to register farmer. Please check your inputs.');
+            const error = err as Record<string, unknown>;
+            const errorData = error?.response as Record<string, unknown>;
+            const dataObj = errorData?.data as Record<string, unknown>;
+            setError((dataObj?.error as string) || ((dataObj?.celo_address as unknown[])?.[0] as string) || 'Failed to register farmer. Please check your inputs.');
         } finally {
             setLoading(false);
         }

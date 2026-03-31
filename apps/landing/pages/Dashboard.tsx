@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { 
     Users, ShieldCheck, Shield, Globe, AlertTriangle, Download, 
-    Loader, MapPin, Activity, Cpu, Database, HardDrive, 
-    Clock, RefreshCw, Loader2
+    MapPin, Activity, RefreshCw, Loader2, Database, HardDrive, Clock
 } from 'lucide-react';
 import MapComponent from '../components/MapComponent';
 import EventLogForm from '../components/EventLogForm';
 import { HealthMetricCard, UserTable } from '../components/AdminComponents';
-import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi } from '../lib/api';
-import { Farmer, Plot, FarmEvent } from '../types';
+import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi, harvestApi } from '../lib/api';
+import { Farmer, Plot, FarmEvent, SystemHealth, AdminUser } from '../types';
+
+interface Harvest {
+    id: string | number;
+    record_id: string;
+    farmer_address: string;
+    crop_type: string;
+    weight_kg: any;
+    payout_amount_cusd: any;
+    status: number;
+    created_at: string;
+    [key: string]: any;
+}
 
 const Dashboard: React.FC = () => {
     const [farmers, setFarmers] = useState<Farmer[]>([]);
     const [plots, setPlots] = useState<Plot[]>([]);
     const [summary, setSummary] = useState<{ total_plots: number, compliant_count: number, compliance_rate: number } | null>(null);
     const [farmEvents, setFarmEvents] = useState<FarmEvent[]>([]);
+    const [harvests, setHarvests] = useState<Harvest[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloadingCert, setDownloadingCert] = useState<string | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     
     // Admin States
-    const [systemHealth, setSystemHealth] = useState<any>(null);
-    const [usersList, setUsersList] = useState<any[]>([]);
+    const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
+    const [usersList, setUsersList] = useState<AdminUser[]>([]);
     const [isPollingHealth, setIsPollingHealth] = useState(false);
     const [userCategory, setUserCategory] = useState<'internal' | 'external'>('internal');
+    const [activeOperationsTab, setActiveOperationsTab] = useState<'farmers' | 'plots' | 'harvests' | 'events'>('farmers');
     
-    const navigate = useNavigate();
     const location = useLocation();
 
     useEffect(() => {
@@ -35,19 +47,27 @@ const Dashboard: React.FC = () => {
 
         const fetchData = async () => {
             try {
-                const [farmersRes, plotsRes, summaryRes, eventsRes] = await Promise.all([
+                const [farmersRes, plotsRes, summaryRes, eventsRes, harvestsRes] = await Promise.all([
                     farmerApi.list(),
                     plotApi.list(),
                     complianceApi.getSummary(),
-                    farmEventApi.list()
+                    farmEventApi.list(),
+                    harvestApi.list()
                 ]);
-                setFarmers(farmersRes.data);
-                setPlots(plotsRes.data);
+                const farmersData = (farmersRes.data as any).results || farmersRes.data || [];
+                setFarmers(farmersData as Farmer[]);
+                const plotsData = (plotsRes.data as any).results || plotsRes.data || [];
+                setPlots(plotsData as Plot[]);
                 setSummary(summaryRes.data);
-                setFarmEvents(eventsRes.data);
-            } catch (err: any) {
+                const eventsData = (eventsRes.data as any).results || eventsRes.data || [];
+                setFarmEvents(eventsData as FarmEvent[]);
+                const harvestsData = (harvestsRes.data as any).results || harvestsRes.data || [];
+                setHarvests(harvestsData as Harvest[]);
+            } catch (err: unknown) {
                 console.error('Error fetching dashboard data:', err);
-                if (err.response?.status === 401) {
+                // Type guard for Axios errors or similar
+                const error = err as Record<string, unknown>;
+                if ((error.response as Record<string, unknown>)?.status === 401) {
                     setIsAuthenticated(false);
                     localStorage.removeItem('vunachain_token');
                 }
@@ -76,7 +96,7 @@ const Dashboard: React.FC = () => {
         try {
             const res = await adminApi.getHealth();
             setSystemHealth(res.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to fetch health metrics:', err);
         } finally {
             setIsPollingHealth(false);
@@ -87,16 +107,16 @@ const Dashboard: React.FC = () => {
         try {
             const res = await adminApi.getUsers();
             setUsersList(res.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to fetch users:', err);
         }
     };
 
-    const handleUpdateUser = async (id: number, data: any) => {
+    const handleUpdateUser = async (id: number, data: Partial<AdminUser>) => {
         try {
             await adminApi.updateUser(id, data);
             fetchUsers();
-        } catch (err) {
+        } catch {
             alert('Failed to update user permissions.');
         }
     };
@@ -106,7 +126,7 @@ const Dashboard: React.FC = () => {
             try {
                 await adminApi.deactivateUser(id);
                 fetchUsers();
-            } catch (err) {
+            } catch {
                 alert('Failed to deactivate user.');
             }
         }
@@ -151,7 +171,7 @@ const Dashboard: React.FC = () => {
                 <div>
                     <h1 className="text-3xl font-black text-slate-900 dark:text-white">Vunachain Dashboard</h1>
                     <p className="text-slate-500 mt-1 font-medium">
-                        {isAuthenticated ? 'Authorized Auditor Access' : 'Public "Passport" View (Restricted)'}
+                        {isAuthenticated ? 'Authorized Auditor Access' : 'Public &quot;Passport&quot; View (Restricted)'}
                     </p>
                 </div>
                 {isAuthenticated ? (
@@ -185,7 +205,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Total Farmers</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.total_plots || 0}</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{farmers.length}</p>
                                         </div>
                                     </div>
                                     <div className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
@@ -194,7 +214,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Compliance Rate</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.compliance_rate.toFixed(1)}%</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.compliance_rate?.toFixed(1) ?? '0.0'}%</p>
                                         </div>
                                     </div>
                                     <div className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
@@ -203,7 +223,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Verified Harvests</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">ALPHA</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{harvests.length}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -212,6 +232,194 @@ const Dashboard: React.FC = () => {
                                 <div className="space-y-4">
                                     <h2 className="text-xl font-black text-slate-900 dark:text-white mb-4">Geospatial Compliance View</h2>
                                     <MapComponent plots={plots} />
+                                </div>
+                            </div>
+                        } />
+
+                        <Route path="operations" element={
+                            <div className="space-y-6 animate-fade-in">
+                                <div>
+                                    <h1 className="text-3xl font-black text-slate-900 dark:text-white">Operations Center</h1>
+                                    <p className="text-slate-500 dark:text-slate-400 mt-2 font-medium">Unified view of farmers, plots, transactions, and field activities</p>
+                                </div>
+
+                                {/* Tab Navigation */}
+                                <div className="flex gap-2 border-b border-gray-200 dark:border-gray-800 overflow-x-auto">
+                                    {[
+                                        { id: 'farmers', label: 'Farmer Directory', icon: 'people' },
+                                        { id: 'plots', label: 'Plot Registry', icon: 'map' },
+                                        { id: 'harvests', label: 'Transaction History', icon: 'inventory_2' },
+                                        { id: 'events', label: 'Field Activity', icon: 'photo_camera' }
+                                    ].map((tab) => (
+                                        <button
+                                            key={tab.id}
+                                            onClick={() => setActiveOperationsTab(tab.id as 'farmers' | 'plots' | 'harvests' | 'events')}
+                                            className={`px-4 py-3 font-semibold text-sm flex items-center gap-2 whitespace-nowrap border-b-2 transition-all ${
+                                                activeOperationsTab === tab.id
+                                                    ? 'border-primary text-primary'
+                                                    : 'border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300'
+                                            }`}
+                                        >
+                                            <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+                                            {tab.label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Tab Content */}
+                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm p-6">
+                                    {/* Farmer Directory Tab */}
+                                    {activeOperationsTab === 'farmers' && (
+                                        <div>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h2 className="text-xl font-black text-slate-900 dark:text-white">Farmer Directory</h2>
+                                                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{farmers.length} Farmers</span>
+                                            </div>
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left text-sm">
+                                                    <thead>
+                                                        <tr className="text-slate-500 border-b border-gray-100 dark:border-gray-700 uppercase tracking-widest text-xs font-bold">
+                                                            <th className="pb-4 font-bold">Name</th>
+                                                            <th className="pb-4 font-bold">Wallet Address</th>
+                                                            <th className="pb-4 font-bold">Phone</th>
+                                                            <th className="pb-4 font-bold text-right">Credit Score</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                                        {farmers.map(farmer => (
+                                                            <tr key={farmer.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                                <td className="py-4 font-bold text-slate-900 dark:text-white">{farmer.full_name || 'Restricted Profile'}</td>
+                                                                <td className="py-4 text-slate-500 font-mono text-xs">{farmer.celo_address || '0x... (Private)'}</td>
+                                                                <td className="py-4 text-slate-500">{farmer.phone_number || 'N/A'}</td>
+                                                                <td className="py-4 text-right">
+                                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${farmer.credit_score > 700 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+                                                                        {farmer.credit_score || 'Locked'}
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Plot Registry Tab */}
+                                    {activeOperationsTab === 'plots' && (
+                                        <div>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h2 className="text-xl font-black text-slate-900 dark:text-white">Plot Registry Map</h2>
+                                                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{plots.length} Plots</span>
+                                            </div>
+                                            <MapComponent plots={plots} />
+                                        </div>
+                                    )}
+
+                                    {/* Transaction History Tab */}
+                                    {activeOperationsTab === 'harvests' && (
+                                        <div>
+                                            <div className="flex items-center justify-between mb-6">
+                                                <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-primary">inventory_2</span>
+                                                    On-Chain Harvest Registry
+                                                </h2>
+                                                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{harvests.length} Records</span>
+                                            </div>
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-left text-sm">
+                                                    <thead className="bg-gray-50 dark:bg-gray-900/50 text-slate-500 uppercase text-xs font-semibold tracking-wider">
+                                                        <tr>
+                                                            <th className="px-4 py-3">Record ID</th>
+                                                            <th className="px-4 py-3">Farmer Address</th>
+                                                            <th className="px-4 py-3">Crop</th>
+                                                            <th className="px-4 py-3 text-right">Weight (kg)</th>
+                                                            <th className="px-4 py-3 text-right">Payout (cUSD)</th>
+                                                            <th className="px-4 py-3">Status</th>
+                                                            <th className="px-4 py-3">Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                                        {harvests.length === 0 ? (
+                                                            <tr><td colSpan={7} className="px-4 py-4 text-center text-slate-400 italic">No harvests indexed yet.</td></tr>
+                                                        ) : harvests.map((h: Harvest) => {
+                                                            const statusMap: Record<number, { label: string; color: string; icon: string }> = {
+                                                                0: { label: 'Pending', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300', icon: 'hourglass_empty' },
+                                                                1: { label: 'Verified', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', icon: 'verified' },
+                                                                2: { label: 'Rejected', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300', icon: 'cancel' },
+                                                                3: { label: 'Paid', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300', icon: 'check_circle' },
+                                                            };
+                                                            const s = statusMap[h.status] || statusMap[0];
+                                                            return (
+                                                                <tr key={h.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                                    <td className="px-4 py-3 font-mono text-xs text-slate-500">#{h.record_id}</td>
+                                                                    <td className="px-4 py-3 font-mono text-xs text-slate-400">{h.farmer_address ? `${h.farmer_address.slice(0,6)}...${h.farmer_address.slice(-4)}` : '—'}</td>
+                                                                    <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{h.crop_type}</td>
+                                                                    <td className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">{parseFloat(h.weight_kg).toFixed(0)}</td>
+                                                                    <td className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">${parseFloat(h.payout_amount_cusd || 0).toFixed(2)}</td>
+                                                                    <td className="px-4 py-3">
+                                                                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${s.color}`}>
+                                                                            <span className="material-symbols-outlined text-[12px]">{s.icon}</span>
+                                                                            {s.label}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className="px-4 py-3 text-slate-500 text-xs">{new Date(h.created_at).toLocaleDateString()}</td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Field Activity Tab */}
+                                    {activeOperationsTab === 'events' && (
+                                        <div className="space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <h2 className="text-xl font-black text-slate-900 dark:text-white">Field Activity Log</h2>
+                                                <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{farmEvents.length} Events</span>
+                                            </div>
+                                            {farmEvents.length === 0 ? (
+                                                <div className="flex items-center justify-center p-12 text-slate-400 italic">
+                                                    No field events have been logged yet.
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    {farmEvents.map(event => (
+                                                        <div key={event.id} className="p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 flex items-start justify-between">
+                                                            <div className="flex-grow">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black rounded-lg uppercase tracking-widest">
+                                                                        {event.event_type}
+                                                                    </span>
+                                                                    <span className="text-[11px] text-slate-400">
+                                                                        {new Date(event.timestamp).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                                <h4 className="font-bold text-lg text-slate-900 dark:text-white">{event.plot_name}</h4>
+                                                                <p className="text-sm text-slate-600 dark:text-slate-300">Farmer: {event.farmer_name}</p>
+                                                                {event.notes && <p className="text-sm text-slate-400 mt-2 italic">{`"${event.notes}"`}</p>}
+                                                            </div>
+                                                            <div className="text-right ml-4">
+                                                                {event.quality_grade && (
+                                                                    <div className="mb-2">
+                                                                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase ${event.quality_grade === 'A' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : event.quality_grade === 'REJECTED' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'}`}>
+                                                                        Grade {event.quality_grade}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+                                                                {event.location && (
+                                                                    <span className="text-[10px] text-slate-400 flex items-center justify-end gap-1 font-bold">
+                                                                        <MapPin size={10} /> GPS Verified
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         } />
@@ -256,10 +464,58 @@ const Dashboard: React.FC = () => {
                         } />
 
                         <Route path="harvests" element={
-                            <div className="p-16 text-center bg-white dark:bg-gray-800 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg animate-fade-in">
-                                <span className="material-symbols-outlined text-4xl text-slate-300 mb-4">inventory_2</span>
-                                <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2">Recent Supply Chain Events</h2>
-                                <p className="text-slate-500 max-w-md mx-auto italic font-medium">On-chain harvests will appear here as they are indexed by the listener.</p>
+                            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm animate-fade-in">
+                                <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                    <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-primary">inventory_2</span>
+                                        On-Chain Harvest Registry
+                                    </h2>
+                                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">{harvests.length} Records</span>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-gray-50 dark:bg-gray-900/50 text-slate-500 uppercase text-xs font-semibold tracking-wider">
+                                            <tr>
+                                                <th className="px-6 py-4">Record ID</th>
+                                                <th className="px-6 py-4">Farmer Address</th>
+                                                <th className="px-6 py-4">Crop</th>
+                                                <th className="px-6 py-4 text-right">Weight (kg)</th>
+                                                <th className="px-6 py-4 text-right">Payout (cUSD)</th>
+                                                <th className="px-6 py-4">Status</th>
+                                                <th className="px-6 py-4">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                                            {harvests.length === 0 ? (
+                                                <tr><td colSpan={7} className="px-6 py-12 text-center text-slate-400 italic">No harvests indexed yet.</td></tr>
+                                            ) : harvests.map((h: Harvest) => {
+                                                const statusMap: Record<number, { label: string; color: string; icon: string }> = {
+                                                    0: { label: 'Pending', color: 'bg-amber-100 text-amber-700', icon: 'hourglass_empty' },
+                                                    1: { label: 'Verified', color: 'bg-blue-100 text-blue-700', icon: 'verified' },
+                                                    2: { label: 'Rejected', color: 'bg-red-100 text-red-700', icon: 'cancel' },
+                                                    3: { label: 'Paid', color: 'bg-green-100 text-green-700', icon: 'check_circle' },
+                                                };
+                                                const s = statusMap[h.status] || statusMap[0];
+                                                return (
+                                                    <tr key={h.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                        <td className="px-6 py-4 font-mono text-xs text-slate-500">#{h.record_id}</td>
+                                                        <td className="px-6 py-4 font-mono text-xs text-slate-400">{h.farmer_address ? `${h.farmer_address.slice(0,6)}...${h.farmer_address.slice(-4)}` : '—'}</td>
+                                                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{h.crop_type}</td>
+                                                        <td className="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">{parseFloat(h.weight_kg).toFixed(0)}</td>
+                                                        <td className="px-6 py-4 text-right font-bold text-slate-900 dark:text-white">${parseFloat(h.payout_amount_cusd || 0).toFixed(2)}</td>
+                                                        <td className="px-6 py-4">
+                                                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${s.color}`}>
+                                                                <span className="material-symbols-outlined text-[12px]">{s.icon}</span>
+                                                                {s.label}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-slate-500 text-xs">{new Date(h.created_at).toLocaleDateString()}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         } />
 
@@ -291,7 +547,7 @@ const Dashboard: React.FC = () => {
                                                         </div>
                                                         <h4 className="font-bold text-lg text-slate-900 dark:text-white">{event.plot_name}</h4>
                                                         <p className="text-sm text-slate-600 dark:text-slate-300">Farmer: {event.farmer_name}</p>
-                                                        {event.notes && <p className="text-sm text-slate-400 mt-2 italic">"{event.notes}"</p>}
+                                                        {event.notes && <p className="text-sm text-slate-400 mt-2 italic">{`"${event.notes}"`}</p>}
                                                     </div>
                                                     <div className="text-right">
                                                         {event.quality_grade && (

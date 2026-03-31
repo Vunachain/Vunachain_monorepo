@@ -1,0 +1,20 @@
+__tests__/components/Button.test.tsx(20,42): error TS2339: Property 'toBeInTheDocument' does not exist on type 'Assertion<HTMLElement>'.
+__tests__/components/Hero.test.tsx(15,13): error TS2322: Type '{ stats: never[]; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'stats' does not exist on type 'IntrinsicAttributes'.
+__tests__/components/Hero.test.tsx(21,18): error TS2322: Type '{ stats: never[]; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'stats' does not exist on type 'IntrinsicAttributes'.
+__tests__/components/Hero.test.tsx(33,13): error TS2322: Type '{ stats: { label: string; value: string; }[]; }' is not assignable to type 'IntrinsicAttributes'.
+  Property 'stats' does not exist on type 'IntrinsicAttributes'.
+pages/AgronomistDashboard.tsx(225,68): error TS2322: Type 'Dispatch<SetStateAction<Prediction | null>>' is not assignable to type '(prediction: Prediction) => void'.
+  Types of parameters 'value' and 'prediction' are incompatible.
+    Type 'Prediction' is not assignable to type 'SetStateAction<Prediction | null>'.
+      Type 'Prediction' is missing the following properties from type 'Prediction': predictedYield, plotName, confidence
+pages/AgronomistDashboard.tsx(331,21): error TS2322: Type 'Plot' is not assignable to type 'PlotData'.
+  Index signature for type 'string' is missing in type 'Plot'.
+pages/CaseOfficerDashboard.tsx(33,38): error TS2352: Conversion of type 'Farmer[]' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'Farmer[]'.
+pages/CoopManagerDashboard.tsx(69,34): error TS2352: Conversion of type 'Farmer[]' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'Farmer[]'.
+pages/CoopManagerDashboard.tsx(71,32): error TS2352: Conversion of type 'Plot[]' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'Plot[]'.
+pages/CoopManagerDashboard.tsx(694,21): error TS2741: Property 'deadline' is missing in type 'Contract' but required in type 'Contract'.

@@ -1,14 +1,15 @@
-Django==5.0.1
+Django==4.2.10
 djangorestframework==3.14.0
+drf-spectacular==0.27.1
+drf-spectacular-sidecar==0.27.1
 django-cors-headers==4.3.1
 python-dotenv==1.0.0
 gunicorn==21.2.0
 dj-database-url==2.1.0
 whitenoise==6.6.0
-psycopg2-binary>=2.9.10
+psycopg2-binary>=2.9.1
 django-jazzmin==2.6.0
 # Geospatial dependencies
-
 Shapely==2.0.3
 geopy==2.4.1
 djangorestframework-gis==1.0

@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import MapComponent from '../components/MapComponent';
 import YieldPredictionForm from '../components/YieldPredictionForm';
 import DiagnosticModal from '../components/DiagnosticModal';
 import { plotApi, farmEventApi, complianceApi } from '../lib/api';
 import { Plot, FarmEvent } from '../types';
 
+interface Prediction {
+    predictedYield: number;
+    plotName: string;
+    confidence: number;
+    [key: string]: any;
+}
+
 const AgronomistDashboard: React.FC = () => {
     const [plots, setPlots] = useState<Plot[]>([]);
     const [farmEvents, setFarmEvents] = useState<FarmEvent[]>([]);
     const [summary, setSummary] = useState<{ total_plots: number, compliant_count: number, compliance_rate: number } | null>(null);
     const [loading, setLoading] = useState(true);
-    const [currentPrediction, setCurrentPrediction] = useState<any>(null);
+    const [currentPrediction, setCurrentPrediction] = useState<Prediction | null>(null);
     const [selectedPlot, setSelectedPlot] = useState<Plot | null>(null);
     const [showNDVI, setShowNDVI] = useState(false);
-    const navigate = useNavigate();
 
     const fetchData = async () => {
         try {
@@ -23,10 +29,12 @@ const AgronomistDashboard: React.FC = () => {
                 farmEventApi.list(),
                 complianceApi.getSummary()
             ]);
-            setPlots(plotsRes.data.results || plotsRes.data || []);
-            setFarmEvents(eventsRes.data.results || eventsRes.data || []);
+            const plotsData = (plotsRes.data as any).results || plotsRes.data || [];
+            setPlots(plotsData as Plot[]);
+            const eventsData = (eventsRes.data as any).results || eventsRes.data || [];
+            setFarmEvents(eventsData as FarmEvent[]);
             setSummary(summaryRes.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error fetching Agronomist data:', err);
         } finally {
             setLoading(false);
@@ -41,7 +49,7 @@ const AgronomistDashboard: React.FC = () => {
         try {
             await plotApi.approve(id);
             fetchData();
-        } catch (error) {
+        } catch {
             alert('Failed to approve plot.');
         }
     };
@@ -214,7 +222,7 @@ const AgronomistDashboard: React.FC = () => {
                                 <p className="text-slate-500 mt-1">Simulate crop output based on environmental parameters.</p>
                             </div>
                             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <YieldPredictionForm plots={plots} onPredictionGenerated={setCurrentPrediction} />
+                                <YieldPredictionForm plots={plots} onPredictionGenerated={(p: any) => setCurrentPrediction(p)} />
                             </div>
                         </div>
 
@@ -320,7 +328,7 @@ const AgronomistDashboard: React.FC = () => {
 
             {selectedPlot && (
                 <DiagnosticModal
-                    plot={selectedPlot}
+                    plot={selectedPlot as any}
                     onClose={() => setSelectedPlot(null)}
                 />
             )}

@@ -17,7 +17,7 @@ const Benefits: React.FC = () => {
           <div className="relative z-10">
             <span className="material-symbols-outlined text-6xl text-gray-200 dark:text-gray-700 absolute -top-8 -left-4 -z-10">format_quote</span>
             <p className="text-2xl font-medium text-gray-800 dark:text-gray-200 italic leading-relaxed">
-              "Compliance isn't just about avoiding fines; it’s about securing your future. Vunachain automates the verification process, ensuring your supply chain meets rigorous global standards (like EUDR) in real-time. By proving origin and sustainability, you don't just stay in business—you unlock higher value for every harvest."
+              &quot;Compliance isn&apos;t just about avoiding fines; it&rsquo;s about securing your future. Vunachain automates the verification process, ensuring your supply chain meets rigorous global standards (like EUDR) in real-time. By proving origin and sustainability, you don&apos;t just stay in business—you unlock higher value for every harvest.&quot;
             </p>
             <div className="mt-6 flex items-center justify-center gap-4">
               <div className="h-12 w-12 rounded-full bg-gray-300 bg-[url('https://images.unsplash.com/photo-1567532939604-b6c5b0adcc80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80')] bg-cover"></div>

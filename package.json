@@ -10,12 +10,14 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "build:landing": "cd apps/landing && npm run build",
     "lint": "turbo lint",
     "test": "turbo test",
     "clean": "turbo clean",
     "dev:landing": "turbo dev --filter=@vunachain/landing",
     "dev:cms": "turbo dev --filter=@vunachain/cms",
-    "dev:protocol": "turbo dev --filter=@vunachain/protocol"
+    "dev:protocol": "turbo dev --filter=@vunachain/protocol",
+    "install:all": "npm install --include=dev && cd apps/landing && npm install --include=dev && cd ../backend && npm install --include=dev 2>/dev/null || true && cd ../cms && npm install --include=dev 2>/dev/null || true && cd ../protocol && npm install --include=dev"
   },
   "devDependencies": {
     "turbo": "^2.1.2"
@@ -24,5 +26,9 @@
     "overrides": {
       "semver": "7.5.3"
     }
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.6",
+    "path-exists": "^5.0.0"
   }
 }

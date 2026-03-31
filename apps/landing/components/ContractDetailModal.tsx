@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
 import FulfillmentBar from './FulfillmentBar';
 
+interface Contract {
+    id: string;
+    commodity: string;
+    status: string;
+    buyer_name: string;
+    target_volume_kg: number;
+    actual_volume_kg: number;
+    quality_specs: string;
+    deadline: string;
+    price_per_kg_cusd: number;
+    [key: string]: any;
+}
+
 interface ContractDetailModalProps {
-    contract: any;
+    contract: Contract;
     onClose: () => void;
     onSign?: (id: string) => void;
     userRole?: 'coop_manager' | 'offtaker';
@@ -54,7 +67,7 @@ const ContractDetailModal: React.FC<ContractDetailModalProps> = ({ contract, onC
                     {['details', 'logistics', 'financials', 'clauses'].map((tab) => (
                         <button
                             key={tab}
-                            onClick={() => setActiveTab(tab as any)}
+                            onClick={() => setActiveTab(tab as 'details' | 'logistics' | 'financials' | 'clauses')}
                             className={`px-6 py-3 text-sm font-bold uppercase tracking-widest transition-colors whitespace-nowrap border-b-2 ${
                                 activeTab === tab
                                     ? 'border-primary text-primary'
@@ -155,7 +168,7 @@ const ContractDetailModal: React.FC<ContractDetailModalProps> = ({ contract, onC
                             <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <p className="font-bold text-sm text-slate-900 dark:text-white mb-2">1. EUDR Compliance</p>
                                 <p className="text-xs text-slate-500 leading-relaxed">
-                                    Seller guarantees that all products supplied under this contract are compliant with the EU Deforestation Regulation (EUDR). Non-compliant batches will be rejected at Seller's expense.
+                                    Seller guarantees that all products supplied under this contract are compliant with the EU Deforestation Regulation (EUDR). Non-compliant batches will be rejected at Seller&apos;s expense.
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">

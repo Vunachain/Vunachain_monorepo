@@ -1,13 +1,12 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
 import {
     getDefaultConfig,
     RainbowKitProvider,
-    darkTheme,
     lightTheme
 } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
-import { celo, celoAlfajores } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 import {
     QueryClientProvider,
     QueryClient,
@@ -22,14 +21,14 @@ const walletConnectProjectId =
 const config = getDefaultConfig({
     appName: 'Vunachain',
     projectId: walletConnectProjectId,
-    chains: [celo, celoAlfajores],
+    chains: [mainnet, sepolia],
     ssr: false,
 });
 
 const queryClient = new QueryClient();
 
 interface Web3ProviderProps {
-    children: any;
+    children: React.ReactNode;
 }
 
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {

@@ -1,4 +1,8 @@
 import axios from 'axios';
+import { 
+    Farmer, Plot, Harvest, FarmEvent, 
+    SystemHealth, AdminUser 
+} from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
@@ -10,11 +14,11 @@ const api = axios.create({
 });
 
 export const authApi = {
-    login: (credentials: any) => api.post('/token/', credentials),
+    login: (credentials: Record<string, string>) => api.post('/token/', credentials),
     refresh: (refresh: string) => api.post('/token/refresh/', { refresh }),
 };
 
-// Attach Bearer token to every request
+// --- Interceptors ---
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('vunachain_token');
     if (token) {
@@ -77,55 +81,58 @@ api.interceptors.response.use(
 );
 
 export const farmerApi = {
-    list: () => api.get('/farmers/'),
-    get: (id: string) => api.get(`/farmers/${id}/`),
-    create: (data: any) => api.post('/farmers/', data),
-    patch: (id: string, data: any) => api.patch(`/farmers/${id}/`, data),
-    updateWallet: (id: string, data: any) => api.patch(`/farmers/${id}/wallet/`, data),
+    list: () => api.get<Farmer[]>('/farmers/'),
+    get: (id: string) => api.get<Farmer>(`/farmers/${id}/`),
+    create: (data: Partial<Farmer>) => api.post<Farmer>('/farmers/', data),
+    patch: (id: string, data: Partial<Farmer>) => api.patch<Farmer>(`/farmers/${id}/`, data),
+    updateWallet: (id: string, data: { celo_address: string }) => api.patch<{ success: boolean }>(`/farmers/${id}/wallet/`, data),
 };
 
 export const plotApi = {
-    list: () => api.get('/plots/'),
-    get: (id: string) => api.get(`/plots/${id}/`),
-    create: (data: any) => api.post('/plots/', data),
-    patch: (id: string, data: any) => api.patch(`/plots/${id}/`, data),
-    approve: (id: string) => api.post(`/plots/${id}/approve/`),
+    list: () => api.get<Plot[]>('/plots/'),
+    get: (id: string) => api.get<Plot>(`/plots/${id}/`),
+    create: (data: Partial<Plot>) => api.post<Plot>('/plots/', data),
+    patch: (id: string, data: Partial<Plot>) => api.patch<Plot>(`/plots/${id}/`, data),
+    approve: (id: string) => api.post<{ success: boolean }>(`/plots/${id}/approve/`),
     getCompliance: (id: string) => api.get(`/plots/${id}/compliance/`),
 };
 
 export const harvestApi = {
-    list: () => api.get('/harvests/history/'),
-    create: (data: any) => api.post('/harvests/', data),
+    list: () => api.get<Harvest[]>('/harvests/history/'),
+    create: (data: Partial<Harvest>) => api.post<Harvest>('/harvests/', data),
     getTrace: (batchId: string) => api.get(`/harvests/trace/${batchId}/`),
 };
 
 export const complianceApi = {
-    getSummary: () => api.get('/compliance/summary/'),
+    getSummary: () => api.get<{ total_plots: number, compliant_count: number, compliance_rate: number }>('/compliance/summary/'),
     getCertificate: (plotId: string) => api.get(`/compliance/${plotId}/certificate/`, { responseType: 'blob' }),
 };
 
 export const farmEventApi = {
-    list: () => api.get('/farm_events/'),
-    create: (data: any) => api.post('/farm_events/', data),
+    list: () => api.get<FarmEvent[]>('/farm_events/'),
+    create: (data: Partial<FarmEvent>) => api.post<FarmEvent>('/farm_events/', data),
 };
 
 export const contractApi = {
-    list: (params?: any) => api.get('/contracts/', { params }),
+    list: (params?: Record<string, string | number>) => api.get('/contracts/', { params }),
     get: (id: string) => api.get(`/contracts/${id}/`),
-    create: (data: any) => api.post('/contracts/', data),
-    accept: (id: string) => api.post(`/contracts/${id}/accept/`),
+    create: (data: Record<string, unknown>) => api.post('/contracts/', data),
+    accept: (id: string) => api.post<{ success: boolean }>(`/contracts/${id}/accept/`),
 };
 
 export const analyticsApi = {
-    // DRF ViewSet list action resolves at the router base URL with trailing slash
     getMetrics: () => api.get('/analytics/'),
 };
 
 export const adminApi = {
-    getHealth: () => api.get('/admin/system/'),
-    getUsers: () => api.get('/admin/users/'),
-    updateUser: (id: number, data: any) => api.patch(`/admin/users/${id}/`, data),
-    deactivateUser: (id: number) => api.delete(`/admin/users/${id}/`),
+    getHealth: () => api.get<SystemHealth>('/admin/system/'),
+    getUsers: () => api.get<AdminUser[]>('/admin/users/'),
+    updateUser: (id: number, data: Partial<AdminUser>) => api.patch<AdminUser>(`/admin/users/${id}/`, data),
+    deactivateUser: (id: number) => api.delete<{ success: boolean }>(`/admin/users/${id}/`),
+};
+
+export const payoutApi = {
+    list: () => api.get('/payouts/'),
 };
 
 export default api;

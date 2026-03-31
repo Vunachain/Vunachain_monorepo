@@ -90,14 +90,14 @@ contract TraceabilityV2 is AccessControl {
     /**
      * @dev Relayer-submitted harvest log (meta-transaction pattern).
      * Farmer signs data off-chain, relayer submits on-chain.
+     * Signature verification happens in the relayer service.
      * @param _farmer Farmer wallet address (recovered from signature)
      * @param _dataHash Hash of harvest data
-     * @param _signature Farmer's EIP-712 signature (verified off-chain by relayer)
      */
     function logHarvestMeta(
         address _farmer,
         bytes32 _dataHash,
-        bytes calldata _signature
+        bytes calldata /* _signature */
     ) external onlyRole(RELAYER_ROLE) returns (uint256) {
         // Signature verification happens in the relayer service
         // Contract trusts RELAYER_ROLE to only submit valid signatures
