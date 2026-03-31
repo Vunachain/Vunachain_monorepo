@@ -48,8 +48,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 if not SECRET_KEY:
-    if os.getenv('DEBUG', 'False') == 'True':
-        # Development: auto-generate a throwaway key (not persisted)
+    if os.getenv('DEBUG', 'False') == 'True' or os.getenv('TESTING', 'False') == 'True':
+        # Development/Testing: auto-generate a throwaway key (not persisted)
         import secrets
         SECRET_KEY = secrets.token_urlsafe(50)
     else:

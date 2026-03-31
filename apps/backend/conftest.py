@@ -30,16 +30,19 @@ def api_client():
 @pytest.fixture
 def authenticated_api_client(db, django_user_model):
     """
-    Fixture providing an authenticated API client.
+    Fixture providing an authenticated API client using JWT tokens.
     """
+    from rest_framework_simplejwt.tokens import RefreshToken
+
     client = APIClient()
     user = django_user_model.objects.create_user(
         username='testuser',
         email='testuser@example.com',
         password='testpass123'
     )
-    token = Token.objects.create(user=user)
-    client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+    # Use JWT tokens instead of deprecated Token auth
+    refresh = RefreshToken.for_user(user)
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
     return client
 
 
@@ -65,6 +68,20 @@ def test_admin_user(db, django_user_model):
         email='admin@example.com',
         password='adminpass123'
     )
+
+
+@pytest.fixture
+def jwt_authenticated_api_client(db, test_user):
+    """
+    Fixture providing an API client authenticated with JWT token via login endpoint.
+    """
+    client = APIClient()
+
+    # Authenticate using the token endpoint (simulating real login flow)
+    from rest_framework_simplejwt.tokens import RefreshToken
+    refresh = RefreshToken.for_user(test_user)
+    client.credentials(HTTP_AUTHORIZATION=f'Bearer {str(refresh.access_token)}')
+    return client
 
 
 @pytest.fixture
@@ -102,6 +119,8 @@ def set_test_environment():
     """
     Set test environment variables.
     """
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.test')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     os.environ['DEBUG'] = 'True'
     os.environ['TESTING'] = 'True'
+    os.environ.setdefault('SECRET_KEY', 'test-secret-key-for-testing-only')
+    os.environ.setdefault('DATABASE_URL', 'sqlite:///:memory:')

@@ -19,6 +19,7 @@ pnpm-lock.yaml
 # Environment Variables
 .env
 .env.local
+.env.docker
 .env.development.local
 .env.test.local
 .env.production.local
