@@ -10,7 +10,7 @@ const ProfileSettingsPage: React.FC = () => {
     const navigate = useNavigate();
     const username = getUserName();
     const role = getUserRole();
-    const tokenPayload = decodeToken() as TokenPayload | null;
+    const tokenPayload = decodeToken() as any;
 
     const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'preferences'>('profile');
     const [editingProfile, setEditingProfile] = useState(false);
@@ -105,7 +105,7 @@ const ProfileSettingsPage: React.FC = () => {
                                     <input
                                         type="email"
                                         value={profileData.email}
-                                        onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                                        onChange={(e: any) => setProfileData({...profileData, email: e.target.value})}
                                         className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 outline-none"
                                     />
                                 </div>
@@ -114,7 +114,7 @@ const ProfileSettingsPage: React.FC = () => {
                                     <input
                                         type="tel"
                                         value={profileData.phone}
-                                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                                        onChange={(e: any) => setProfileData({...profileData, phone: e.target.value})}
                                         className="w-full p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/50 outline-none"
                                     />
                                 </div>

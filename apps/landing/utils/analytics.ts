@@ -10,7 +10,7 @@
 // Extend the Window interface to include dataLayer
 declare global {
     interface Window {
-        dataLayer: Record<string, unknown>[];
+        dataLayer: any[];
     }
 }
 

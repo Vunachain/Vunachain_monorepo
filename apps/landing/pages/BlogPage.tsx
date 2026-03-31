@@ -5,7 +5,13 @@ import SEO from '../components/SEO';
 import { generateBreadcrumbSchema } from '../lib/schema';
 
 interface BlogPost {
-    [key: string]: unknown;
+    slug: string;
+    image?: string;
+    title: string;
+    category: string;
+    publishedAt: string;
+    excerpt: string;
+    [key: string]: any;
 }
 
 const BlogPage: React.FC = () => {

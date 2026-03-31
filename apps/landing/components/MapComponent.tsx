@@ -106,9 +106,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
         type: 'FeatureCollection',
         features: plots.slice(0, 3).map(p => ({
             type: 'Feature',
-            geometry: p.centroid || (p.boundary as Record<string, unknown>)?.coordinates?.[0]?.[0]?.[0] ? {
+            geometry: p.centroid || (p.boundary as any)?.coordinates?.[0]?.[0]?.[0] ? {
                 type: 'Point',
-                coordinates: p.centroid?.coordinates || (p.boundary as Record<string, unknown>).coordinates[0][0][0]
+                coordinates: p.centroid?.coordinates || (p.boundary as any).coordinates[0][0][0]
             } : { type: 'Point', coordinates: [37.9, 0.02] },
             properties: {
                 risk: 'High Pest Risk'
@@ -132,7 +132,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
         <div className="h-full w-full relative group">
             <Map
                 {...viewState}
-                onMove={evt => setViewState(evt.viewState)}
+                onMove={(evt: any) => setViewState(evt.viewState)}
                 mapboxAccessToken={MAPBOX_TOKEN}
                 style={{ width: '100%', height: '100%' }}
                 mapStyle={showSatellite ? "mapbox://styles/mapbox/satellite-v9" : "mapbox://styles/mapbox/streets-v12"}
@@ -185,6 +185,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                                 ],
                                 'heatmap-radius': 40
                             }}
+                            source="pest-source"
                         />
                     </Source>
                 )}
@@ -192,8 +193,8 @@ const MapComponent: React.FC<MapComponentProps> = ({ plots, onPlotClick, showSat
                 {popupInfo && (
                     <Popup
                         anchor="top"
-                        longitude={popupInfo.centroid?.coordinates?.[0] || (popupInfo.boundary as Record<string, unknown>)?.coordinates?.[0]?.[0]?.[0] || 37.9062}
-                        latitude={popupInfo.centroid?.coordinates?.[1] || (popupInfo.boundary as Record<string, unknown>)?.coordinates?.[0]?.[0]?.[1] || 0.0236}
+                        longitude={popupInfo.centroid?.coordinates?.[0] || (popupInfo.boundary as any)?.coordinates?.[0]?.[0]?.[0] || 37.9062}
+                        latitude={popupInfo.centroid?.coordinates?.[1] || (popupInfo.boundary as any)?.coordinates?.[0]?.[0]?.[1] || 0.0236}
                         onClose={() => setPopupInfo(null)}
                         className="vunachain-map-popup"
                     >

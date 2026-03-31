@@ -6,13 +6,30 @@ import { ContractPerformanceRadar } from '../components/DashboardCharts';
 import { motion } from 'framer-motion';
 
 interface Batch {
-    [key: string]: unknown;
+    id: string | number;
+    status: string;
+    [key: string]: any;
 }
 interface Contract {
-    [key: string]: unknown;
+    id: string;
+    status: string;
+    commodity: string;
+    actual_volume_kg: any;
+    target_volume_kg: any;
+    buyer_name?: string;
+    price_per_kg_cusd?: number;
+    deadline?: string;
+    [key: string]: any;
 }
 interface Metrics {
-    [key: string]: unknown;
+    metrics?: {
+        avg_payment_speed_minutes?: number;
+        total_volume_mt?: number;
+    };
+    charts?: {
+        contract_performance?: any[];
+    };
+    [key: string]: any;
 }
 
 const OfftakerDashboard: React.FC = () => {
@@ -43,12 +60,12 @@ const OfftakerDashboard: React.FC = () => {
                     contractApi.list(),
                     analyticsApi.getMetrics()
                 ]);
-                const batchesData = (hRes.data as Record<string, unknown>).results || hRes.data || [];
+                const batchesData = (hRes.data as any).results || hRes.data || [];
                 setBatches(batchesData as Batch[]);
-                const contractsData = (cRes.data as Record<string, unknown>).results || cRes.data || [];
+                const contractsData = (cRes.data as any).results || cRes.data || [];
                 setContracts(contractsData as Contract[]);
                 setMetrics(mRes.data as Metrics);
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Error fetching Offtaker data:', err);
             } finally {
                 setLoading(false);

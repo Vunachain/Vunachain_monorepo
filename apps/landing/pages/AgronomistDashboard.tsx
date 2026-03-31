@@ -7,7 +7,10 @@ import { plotApi, farmEventApi, complianceApi } from '../lib/api';
 import { Plot, FarmEvent } from '../types';
 
 interface Prediction {
-    [key: string]: unknown;
+    predictedYield: number;
+    plotName: string;
+    confidence: number;
+    [key: string]: any;
 }
 
 const AgronomistDashboard: React.FC = () => {
@@ -26,12 +29,12 @@ const AgronomistDashboard: React.FC = () => {
                 farmEventApi.list(),
                 complianceApi.getSummary()
             ]);
-            const plotsData = (plotsRes.data as Record<string, unknown>).results || plotsRes.data || [];
+            const plotsData = (plotsRes.data as any).results || plotsRes.data || [];
             setPlots(plotsData as Plot[]);
-            const eventsData = (eventsRes.data as Record<string, unknown>).results || eventsRes.data || [];
+            const eventsData = (eventsRes.data as any).results || eventsRes.data || [];
             setFarmEvents(eventsData as FarmEvent[]);
             setSummary(summaryRes.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error fetching Agronomist data:', err);
         } finally {
             setLoading(false);

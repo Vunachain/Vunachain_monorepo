@@ -70,7 +70,7 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
                 // here for the backend to process the expanded event metadata.
             };
 
-            await farmEventApi.create(dataToSubmit);
+            await farmEventApi.create(dataToSubmit as any);
             setResult({
                 success: true,
                 message: `Farm event logged successfully.`
@@ -92,7 +92,7 @@ const EventLogForm: React.FC<EventLogFormProps> = ({ farmers, plots, onSuccess }
             const errorMsg = (error?.response as Record<string, unknown>)?.data;
             setResult({
                 success: false,
-                message: (errorMsg as Record<string, unknown>)?.error || 'Failed to log event.'
+                message: (errorMsg as any)?.error || 'Failed to log event.'
             });
         } finally {
             setLoading(false);

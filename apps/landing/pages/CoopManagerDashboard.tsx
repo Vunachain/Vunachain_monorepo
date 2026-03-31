@@ -11,13 +11,35 @@ import { VolumeTimeAreaChart, ComplianceDonutChart } from '../components/Dashboa
 import { motion } from 'framer-motion';
 
 interface Contract {
-    [key: string]: unknown;
+    id: string;
+    status: string;
+    commodity: string;
+    buyer_name: string;
+    price_per_kg_cusd: number;
+    target_volume_kg: number;
+    actual_volume_kg: number;
+    quality_specs: string;
+    [key: string]: any;
 }
 interface Harvest {
-    [key: string]: unknown;
+    id: string | number;
+    payout_amount_cusd: any;
+    status: string;
+    farmer_name?: string;
+    farmer?: string;
+    weight_kg?: number;
+    created_at?: string;
+    [key: string]: any;
 }
 interface Metrics {
-    [key: string]: unknown;
+    avg_payment_speed_minutes?: number;
+    side_selling_improvement?: number;
+    dispute_rate?: number;
+    charts?: {
+        weekly_volume?: any[];
+        compliance_distribution?: any[];
+    };
+    [key: string]: any;
 }
 
 const CoopManagerDashboard: React.FC = () => {
@@ -33,7 +55,6 @@ const CoopManagerDashboard: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [showWizard, setShowWizard] = useState(false);
     const [selectedContract, setSelectedContract] = useState<Contract | null>(null);
-    const navigate = useNavigate();
 
     const fetchData = async () => {
         try {
@@ -53,9 +74,9 @@ const CoopManagerDashboard: React.FC = () => {
             const contractsData = (contractsRes.data as Record<string, unknown>).results || contractsRes.data || [];
             setContracts(contractsData as Contract[]);
             setMetrics(metricsRes.data.metrics as Metrics);
-            const harvestsData = (harvestsRes.data as Record<string, unknown>).results || harvestsRes.data || [];
+            const harvestsData = (harvestsRes.data as any).results || harvestsRes.data || [];
             setHarvests(harvestsData as Harvest[]);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error fetching Coop Manager data:', err);
         } finally {
             setLoading(false);

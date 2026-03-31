@@ -11,7 +11,15 @@ import { farmerApi, plotApi, complianceApi, farmEventApi, adminApi, harvestApi }
 import { Farmer, Plot, FarmEvent, SystemHealth, AdminUser } from '../types';
 
 interface Harvest {
-    [key: string]: unknown;
+    id: string | number;
+    record_id: string;
+    farmer_address: string;
+    crop_type: string;
+    weight_kg: any;
+    payout_amount_cusd: any;
+    status: number;
+    created_at: string;
+    [key: string]: any;
 }
 
 const Dashboard: React.FC = () => {
@@ -46,14 +54,14 @@ const Dashboard: React.FC = () => {
                     farmEventApi.list(),
                     harvestApi.list()
                 ]);
-                const farmersData = (farmersRes.data as Record<string, unknown>).results || farmersRes.data || [];
+                const farmersData = (farmersRes.data as any).results || farmersRes.data || [];
                 setFarmers(farmersData as Farmer[]);
-                const plotsData = (plotsRes.data as Record<string, unknown>).results || plotsRes.data || [];
+                const plotsData = (plotsRes.data as any).results || plotsRes.data || [];
                 setPlots(plotsData as Plot[]);
                 setSummary(summaryRes.data);
-                const eventsData = (eventsRes.data as Record<string, unknown>).results || eventsRes.data || [];
+                const eventsData = (eventsRes.data as any).results || eventsRes.data || [];
                 setFarmEvents(eventsData as FarmEvent[]);
-                const harvestsData = (harvestsRes.data as Record<string, unknown>).results || harvestsRes.data || [];
+                const harvestsData = (harvestsRes.data as any).results || harvestsRes.data || [];
                 setHarvests(harvestsData as Harvest[]);
             } catch (err: unknown) {
                 console.error('Error fetching dashboard data:', err);
@@ -88,7 +96,7 @@ const Dashboard: React.FC = () => {
         try {
             const res = await adminApi.getHealth();
             setSystemHealth(res.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to fetch health metrics:', err);
         } finally {
             setIsPollingHealth(false);
@@ -99,7 +107,7 @@ const Dashboard: React.FC = () => {
         try {
             const res = await adminApi.getUsers();
             setUsersList(res.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to fetch users:', err);
         }
     };
@@ -206,7 +214,7 @@ const Dashboard: React.FC = () => {
                                         </div>
                                         <div>
                                             <p className="text-slate-500 dark:text-gray-400 text-xs font-bold uppercase tracking-widest">Compliance Rate</p>
-                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.compliance_rate.toFixed(1)}%</p>
+                                            <p className="text-2xl font-black text-slate-900 dark:text-white">{summary?.compliance_rate?.toFixed(1) ?? '0.0'}%</p>
                                         </div>
                                     </div>
                                     <div className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">

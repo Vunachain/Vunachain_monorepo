@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import FulfillmentBar from './FulfillmentBar';
 
 interface Contract {
-    [key: string]: unknown;
+    id: string;
+    commodity: string;
+    status: string;
+    buyer_name: string;
+    target_volume_kg: number;
+    actual_volume_kg: number;
+    quality_specs: string;
+    deadline: string;
+    price_per_kg_cusd: number;
+    [key: string]: any;
 }
 
 interface ContractDetailModalProps {

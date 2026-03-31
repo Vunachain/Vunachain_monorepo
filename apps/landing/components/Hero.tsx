@@ -3,7 +3,11 @@ import Tooltip from './Tooltip';
 import { getLandingPageData } from '../lib/sanity';
 
 interface HeroContent {
-  [key: string]: unknown;
+  headline?: string;
+  subheadline?: string;
+  primaryButtonText?: string;
+  secondaryButtonText?: string;
+  [key: string]: any;
 }
 
 const Hero: React.FC = () => {

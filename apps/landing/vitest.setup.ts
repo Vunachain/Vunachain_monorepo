@@ -3,8 +3,9 @@
  * Runs before tests are executed
  */
 
-import '@testing-library/jest-dom';
+import * as matchers from '@testing-library/jest-dom/matchers';
 import { expect, afterEach, vi } from 'vitest';
+expect.extend(matchers as any);
 import { cleanup } from '@testing-library/react';
 
 // Cleanup after each test
@@ -15,7 +16,7 @@ afterEach(() => {
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
     onchange: null,

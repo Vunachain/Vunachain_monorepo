@@ -3,10 +3,17 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { contractApi, farmerApi } from '../lib/api';
 
 interface Contract {
-    [key: string]: unknown;
+    id: string | number;
+    status: string;
+    commodity: string;
+    buyer_name?: string;
+    coop_name?: string;
+    price_per_kg_cusd?: any;
+    [key: string]: any;
 }
 interface Farmer {
-    [key: string]: unknown;
+    id: string | number;
+    [key: string]: any;
 }
 
 const CaseOfficerDashboard: React.FC = () => {
@@ -25,7 +32,7 @@ const CaseOfficerDashboard: React.FC = () => {
                 setContracts(contractsData as Contract[]);
                 const farmersData = (fRes.data as Record<string, unknown>).results || fRes.data || [];
                 setFarmers(farmersData as Farmer[]);
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Error fetching Case Officer data:', err);
             } finally {
                 setLoading(false);

@@ -6,7 +6,17 @@ import SEO from '../components/SEO';
 import { generateArticleSchema } from '../lib/schema';
 
 interface BlogPost {
-    [key: string]: unknown;
+    title: string;
+    excerpt: string;
+    image?: string;
+    publishedAt: string;
+    category: string;
+    content?: any;
+    author?: {
+        name: string;
+        image?: string;
+    };
+    [key: string]: any;
 }
 
 const BlogPostPage: React.FC = () => {
