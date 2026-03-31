@@ -2,8 +2,8 @@
   "extends": "@vunachain/config-typescript/base.json",
   "compilerOptions": {
     "target": "ES2022",
-    "module": "Node16",
-    "moduleResolution": "node16",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -12,7 +12,6 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "preserveSymlinks": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {

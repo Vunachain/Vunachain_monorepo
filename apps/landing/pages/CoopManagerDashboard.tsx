@@ -66,12 +66,12 @@ const CoopManagerDashboard: React.FC = () => {
                 analyticsApi.getMetrics(),
                 harvestApi.list(),
             ]);
-            const farmersData = (farmersRes.data as Record<string, unknown>).results || farmersRes.data || [];
+            const farmersData = (farmersRes.data as any).results || farmersRes.data || [];
             setFarmers(farmersData as Farmer[]);
-            const plotsData = (plotsRes.data as Record<string, unknown>).results || plotsRes.data || [];
+            const plotsData = (plotsRes.data as any).results || plotsRes.data || [];
             setPlots(plotsData as Plot[]);
             setSummary(summaryRes.data);
-            const contractsData = (contractsRes.data as Record<string, unknown>).results || contractsRes.data || [];
+            const contractsData = (contractsRes.data as any).results || contractsRes.data || [];
             setContracts(contractsData as Contract[]);
             setMetrics(metricsRes.data.metrics as Metrics);
             const harvestsData = (harvestsRes.data as any).results || harvestsRes.data || [];
@@ -691,7 +691,7 @@ const CoopManagerDashboard: React.FC = () => {
 
             {selectedContract && (
                 <ContractDetailModal
-                    contract={selectedContract}
+                    contract={selectedContract as any}
                     onClose={() => setSelectedContract(null)}
                     onSign={selectedContract.status === 'OPEN' ? handleAcceptContract : undefined}
                     userRole="coop_manager"

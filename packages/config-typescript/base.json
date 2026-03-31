@@ -15,7 +15,6 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "esModuleInterop": true,
-    "preserveSymlinks": true
+    "esModuleInterop": true
   }
 }

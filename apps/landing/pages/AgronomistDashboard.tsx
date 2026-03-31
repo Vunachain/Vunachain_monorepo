@@ -222,7 +222,7 @@ const AgronomistDashboard: React.FC = () => {
                                 <p className="text-slate-500 mt-1">Simulate crop output based on environmental parameters.</p>
                             </div>
                             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm">
-                                <YieldPredictionForm plots={plots} onPredictionGenerated={setCurrentPrediction} />
+                                <YieldPredictionForm plots={plots} onPredictionGenerated={(p: any) => setCurrentPrediction(p)} />
                             </div>
                         </div>
 
@@ -328,7 +328,7 @@ const AgronomistDashboard: React.FC = () => {
 
             {selectedPlot && (
                 <DiagnosticModal
-                    plot={selectedPlot}
+                    plot={selectedPlot as any}
                     onClose={() => setSelectedPlot(null)}
                 />
             )}

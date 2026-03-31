@@ -28,9 +28,9 @@ const CaseOfficerDashboard: React.FC = () => {
                     contractApi.list(),
                     farmerApi.list()
                 ]);
-                const contractsData = (cRes.data as Record<string, unknown>).results || cRes.data || [];
+                const contractsData = (cRes.data as any).results || cRes.data || [];
                 setContracts(contractsData as Contract[]);
-                const farmersData = (fRes.data as Record<string, unknown>).results || fRes.data || [];
+                const farmersData = (fRes.data as any).results || fRes.data || [];
                 setFarmers(farmersData as Farmer[]);
             } catch (err: any) {
                 console.error('Error fetching Case Officer data:', err);
