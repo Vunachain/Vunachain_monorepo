@@ -26,6 +26,7 @@
     }
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.6",
     "path-exists": "^5.0.0"
   }
 }
