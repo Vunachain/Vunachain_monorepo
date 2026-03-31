@@ -8,7 +8,13 @@ from django.contrib.auth.models import User
 
 username = os.environ.get('ADMIN_USERNAME', 'admin')
 email = os.environ.get('ADMIN_EMAIL', 'admin@vunachain.com')
-password = os.environ.get('ADMIN_PASSWORD', 'VunaAdmin2026!')
+password = os.environ.get('ADMIN_PASSWORD')
+
+if not password:
+    raise SystemExit(
+        "ERROR: ADMIN_PASSWORD environment variable is required. "
+        "Set it before running this script."
+    )
 
 user, created = User.objects.get_or_create(username=username, defaults={'email': email})
 

@@ -203,23 +203,37 @@ class ComplianceViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=['get'], url_path='certificate')
     def download_certificate(self, request, pk=None):
-        """Generate and download a PDF compliance certificate."""
+        """Generate and download a PDF compliance certificate.
+
+        Access is scoped through the parent ComplianceViewSet permission model:
+        staff/Auditor/Agronomist see all; CoopManager sees only their coop's plots.
+        """
+        user = request.user
+        allowed_plots = Plot.objects.all()
+        if not user.is_staff and not user.groups.filter(
+            name__in=['Auditor', 'Agronomist', 'GIS Admin', 'System Admin']
+        ).exists():
+            coop = getattr(user, 'managed_cooperative', None)
+            if coop:
+                allowed_plots = Plot.objects.filter(cooperative=coop)
+            else:
+                allowed_plots = Plot.objects.none()
+
         try:
-            plot = Plot.objects.get(id=pk)
-            farmer = plot.farmer
-            # Get last 5 harvests for this farmer as proof
-            harvests = OnChainHarvest.objects.filter(farmer_address=farmer.celo_address).order_by('-record_id')[:5]
-            
-            pdf_content = generate_compliance_certificate(farmer, plot, harvests)
-            
-            return FileResponse(
-                io.BytesIO(pdf_content), 
-                as_attachment=True, 
-                filename=f"Compliance_Certificate_{plot.id}.pdf",
-                content_type='application/pdf'
-            )
+            plot = allowed_plots.get(id=pk)
         except Plot.DoesNotExist:
             return Response({"error": "Plot not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        farmer = plot.farmer
+        harvests = OnChainHarvest.objects.filter(farmer_address=farmer.celo_address).order_by('-record_id')[:5]
+        pdf_content = generate_compliance_certificate(farmer, plot, harvests)
+
+        return FileResponse(
+            io.BytesIO(pdf_content),
+            as_attachment=True,
+            filename=f"Compliance_Certificate_{plot.id}.pdf",
+            content_type='application/pdf'
+        )
 
 class HarvestViewSet(viewsets.ModelViewSet):
     """
@@ -324,14 +338,33 @@ class HarvestViewSet(viewsets.ModelViewSet):
 class HarvestListView(generics.ListAPIView):
     """
     Returns harvest history for a specific farmer wallet.
+    Staff, Auditors, and Agronomists may query any address.
+    CoopManagers may only query addresses belonging to farmers in their cooperative.
+    All other roles receive an empty result.
     """
     serializer_class = serializers.OnChainHarvestSerializer
-    permission_classes = [permissions.IsAuthenticated] # Changed from AllowAny to restrict to authorized roles
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        user = self.request.user
         address = self.request.query_params.get('address')
-        if address:
+        if not address:
+            return OnChainHarvest.objects.none()
+
+        # Full access for compliance/admin roles
+        if user.is_staff or user.groups.filter(
+            name__in=['Auditor', 'Agronomist', 'System Admin']
+        ).exists():
             return OnChainHarvest.objects.filter(farmer_address__iexact=address).order_by('-record_id')
+
+        # CoopManagers: verify the wallet belongs to a farmer in their coop
+        if user.groups.filter(name='CoopManager').exists():
+            coop = getattr(user, 'managed_cooperative', None)
+            if coop and FarmerProfile.objects.filter(
+                celo_address__iexact=address, cooperative=coop
+            ).exists():
+                return OnChainHarvest.objects.filter(farmer_address__iexact=address).order_by('-record_id')
+
         return OnChainHarvest.objects.none()
 
 @api_view(['GET'])
@@ -369,11 +402,11 @@ def mpesa_callback(request):
     import os
     logger = logging.getLogger(__name__)
 
-    # 1. Security Check: Token-based access
+    # 1. Security Check: Token-based access (deny-by-default when token is unset)
     expected_token = os.getenv('MPESA_CALLBACK_TOKEN')
     provided_token = request.query_params.get('token')
-    
-    if expected_token and provided_token != expected_token:
+
+    if not expected_token or provided_token != expected_token:
         logger.warning("M-Pesa callback rejected: Invalid or missing token.")
         return Response({"ResultCode": 1, "ResultDesc": "Unauthorized"}, status=401)
 
@@ -468,12 +501,12 @@ class FarmEventViewSet(viewsets.ModelViewSet):
                 return FarmEvent.objects.filter(plot__cooperative=coop)
             return FarmEvent.objects.none()
 
-        # FieldAgent: events logged against farmers in their coop (same coop scoping)
+        # FieldAgent: events on plots within their linked cooperative
         if user.groups.filter(name='FieldAgent').exists():
-            # Field agents belong to a cooperative via their profile
-            # Scoped by the cooperative linked to their managed_cooperative or a related FK
-            # Fall back to all for now if no profile link exists
-            return FarmEvent.objects.all()
+            coop = getattr(user, 'managed_cooperative', None)
+            if coop:
+                return FarmEvent.objects.filter(plot__cooperative=coop)
+            return FarmEvent.objects.none()
 
         return FarmEvent.objects.none()
 

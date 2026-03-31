@@ -88,4 +88,4 @@ class SupplyContractSerializer(serializers.ModelSerializer):
             'commodity', 'target_volume_kg', 'price_per_kg_cusd', 'quality_specs',
             'status', 'deadline', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'buyer_name', 'coop_name', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'buyer', 'buyer_name', 'coop_name', 'created_at', 'updated_at']

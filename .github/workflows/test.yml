@@ -48,14 +48,22 @@ jobs:
           pip install pytest pytest-django pytest-cov
 
       - name: Run migrations
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vunachain_test
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DEBUG: "True"
         run: |
           cd apps/backend
-          python manage.py migrate --settings=config.settings.test
+          python manage.py migrate
 
       - name: Run tests
         env:
-          DJANGO_SETTINGS_MODULE: config.settings.test
+          DJANGO_SETTINGS_MODULE: config.settings
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vunachain_test
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DEBUG: "True"
+          TESTING: "True"
         run: |
           cd apps/backend
           pytest --cov=. --cov-report=xml --cov-report=html -v

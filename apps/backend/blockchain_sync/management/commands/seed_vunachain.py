@@ -12,8 +12,14 @@ class Command(BaseCommand):
         self.stdout.write("Seeding Vunachain database (Simplified JSON Mapping)...")
 
         # 1. Create Superuser if it doesn't exist
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@vunachain.com', 'Vunachain2024!')
+        import os
+        admin_password = os.environ.get('SEED_ADMIN_PASSWORD')
+        if not admin_password:
+            self.stdout.write(self.style.WARNING(
+                'Skipping admin creation: SEED_ADMIN_PASSWORD env var is not set.'
+            ))
+        elif not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@vunachain.com', admin_password)
             self.stdout.write(self.style.SUCCESS('Superuser "admin" created.'))
 
         # 2. Re-run setup_roles to ensure groups exist
@@ -29,7 +35,12 @@ class Command(BaseCommand):
             {'username': 'auditor', 'group': 'Auditor'},
         ]
 
-        password = 'Vunachain2024!'
+        password = os.environ.get('SEED_USER_PASSWORD')
+        if not password:
+            self.stdout.write(self.style.ERROR(
+                'SEED_USER_PASSWORD env var is required to create persona users.'
+            ))
+            return
         for p in personas:
             user, created = User.objects.get_or_create(username=p['username'])
             if created:
@@ -139,7 +150,6 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Harvest records seeded."))
 
         self.stdout.write(self.style.SUCCESS("\nDatabase seeded successfully!"))
-        self.stdout.write(self.style.NOTICE("\nCredentials for testing:"))
-        self.stdout.write("Admin: admin / Vunachain2024!")
+        self.stdout.write(self.style.NOTICE("\nPersona users created (passwords set from SEED_USER_PASSWORD):"))
         for p in personas:
-            self.stdout.write(f"{p['group']}: {p['username']} / {password}")
+            self.stdout.write(f"  {p['group']}: {p['username']}")

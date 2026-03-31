@@ -13,9 +13,12 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Staff can see all, others only their own? 
-        # For now, let's keep it open for within-platform lookups (e.g. searching coop managers).
-        return UserProfile.objects.all()
+        user = self.request.user
+        if user.is_staff or user.groups.filter(
+            name__in=['Auditor', 'System Admin']
+        ).exists():
+            return UserProfile.objects.all()
+        return UserProfile.objects.filter(user=user)
 
     @action(detail=False, methods=['GET', 'PATCH', 'PUT'], url_path='me')
     def me(self, request):

@@ -58,3 +58,10 @@ apps/backend/staticfiles/
 *.swo
 *~
 Thumbs.db
+
+# Secret / accidental artifact files
+SECRET_KEY.txt
+test_write.txt
+*\ 2.py
+*\ 2.ts
+*\ 2.json
