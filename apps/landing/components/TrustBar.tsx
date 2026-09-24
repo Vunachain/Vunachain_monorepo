@@ -5,10 +5,18 @@ const TrustBar: React.FC = () => {
   return (
     <div className="w-full border-y border-gray-200 dark:border-white/5 bg-white dark:bg-black/20">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-6 py-10 lg:flex-row lg:justify-center lg:gap-16">
+        {/* EUDR Ready badge first — that is the primary signal for the export audience */}
+        <div className="group flex items-center gap-2 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300 cursor-default hover:scale-105">
+          <Tooltip content="EUDR Compliant">
+            <div className="flex items-center gap-2 text-[#61b869] border border-[#61b869] px-3 py-1 rounded-full bg-[#61b869]/5">
+              <span className="material-symbols-outlined text-xl">verified_user</span>
+              <span className="font-bold text-sm">EUDR Ready</span>
+            </div>
+          </Tooltip>
+        </div>
 
         <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-10">
-
-          {/* Celo - Updated to be rings (donuts) for better accuracy */}
+          {/* Celo */}
           <div className="group flex items-center gap-3 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300 cursor-default hover:scale-105">
             <Tooltip content="Celo Blockchain">
               <div className="flex items-center gap-2">
@@ -22,11 +30,10 @@ const TrustBar: React.FC = () => {
             </Tooltip>
           </div>
 
-          {/* KEPSA - Improved typography and spacing */}
+          {/* KEPSA */}
           <div className="group flex items-center gap-4 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300 cursor-default hover:scale-105">
             <Tooltip content="Kenya Private Sector Alliance">
               <div className="flex items-center gap-2">
-                {/* Abstract representation of KEPSA logo icon if needed, or just strong text */}
                 <div className="h-8 w-8 rounded bg-[#008751] flex items-center justify-center text-white font-black text-xs">KE</div>
                 <div className="flex flex-col leading-none">
                   <span className="text-2xl font-black tracking-tighter text-[#008751]">KEPSA</span>
@@ -36,11 +43,10 @@ const TrustBar: React.FC = () => {
             </Tooltip>
           </div>
 
-          {/* KAM - Added Gear Icon for accuracy */}
+          {/* KAM */}
           <div className="group flex items-center gap-4 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300 cursor-default hover:scale-105">
             <Tooltip content="Kenya Association of Manufacturers">
               <div className="flex items-center gap-2">
-                {/* Gear Icon representing Manufacturing */}
                 <div className="text-[#0060aa]">
                   <span className="material-symbols-outlined text-4xl">settings</span>
                 </div>
@@ -51,17 +57,6 @@ const TrustBar: React.FC = () => {
               </div>
             </Tooltip>
           </div>
-
-          {/* EUDR Ready */}
-          <div className="group flex items-center gap-2 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-300 cursor-default hover:scale-105">
-            <Tooltip content="EUDR Compliant">
-              <div className="flex items-center gap-2 text-[#61b869] border border-[#61b869] px-3 py-1 rounded-full bg-[#61b869]/5">
-                <span className="material-symbols-outlined text-xl">verified_user</span>
-                <span className="font-bold text-sm">EUDR Ready</span>
-              </div>
-            </Tooltip>
-          </div>
-
         </div>
       </div>
     </div>

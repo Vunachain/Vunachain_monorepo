@@ -15,7 +15,7 @@ const Navbar: React.FC<NavbarProps> = ({ onOpenDemo }) => {
   const location = useLocation();
 
   const navLinks = [
-    { name: 'Insights', href: '/blog' },
+    { name: 'How It Works', href: '/#how-it-works' },
     { name: 'Challenges', href: '/#challenges' },
     { name: 'Technology', href: '/#technology' },
     { name: 'ROI', href: '/#roi' },

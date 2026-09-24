@@ -25,8 +25,8 @@ const SEO: React.FC<SEOProps> = ({
     const siteUrl = 'https://vunachain.com';
 
     const fullTitle = title ? `${title} | ${siteName}` : `${siteName} - EUDR Compliance & Supply Chain Traceability`;
-    const defaultDescription = description || 'Source verified produce through Vunachain’s transparent contract farming platform. Ensuring EUDR compliance, fair pricing, and immutable on-chain history for Kenyan agriculture.';
-    const defaultKeywords = keywords || 'Contract Farming Kenya, EUDR Compliance, Celo Blockchain, Agri-tech, Smart Contracts, Vunachain';
+    const defaultDescription = description || 'Vunachain gives cooperatives and exporters blockchain-verified traceability, automated M-Pesa payouts, and audit-ready EUDR compliance from farm to port.';
+    const defaultKeywords = keywords || 'EUDR Compliance, Blockchain Traceability, M-Pesa Payouts, Kenya Tea Act 2020, Agricultural Supply Chain, Vunachain';
     const fullUrl = `${siteUrl}${pathname}`;
     const defaultImage = `${siteUrl}/og-image.png`;
     const ogImage = image || defaultImage;

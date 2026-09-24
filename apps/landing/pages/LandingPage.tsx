@@ -22,8 +22,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onOpenDemo }) => {
             <ProblemSection />
             <FeatureSpotlight />
             <HowItWorks />
-            <ROICalculator onOpenDemo={onOpenDemo} />
+            <ROICalculator />
             <Benefits />
+            {/* Anchor target for footer CTA button */}
+            <div id="demo-anchor" className="h-0"></div>
         </>
     );
 };
